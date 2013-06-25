@@ -1,4 +1,54 @@
-﻿function start(u) {
+﻿var board = (function() {
+    var self = { width: 320, height: 500, color: '#d0e7f9' };
+
+    self.clear = function(ctx) {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.rect(0, 0, this.width, this.height);
+        ctx.closePath();
+        ctx.fill();
+    };
+
+    return self;
+})();
+
+var clouds = (function(spec) {
+    var self = [];
+    self.count = 10;
+    for (var j = 0; j < self.count; j++) {
+        self.push([Math.random() * spec.width,
+            Math.random() * spec.height,
+            Math.random() * 100,
+            Math.random() / 2]);
+    }
+
+    self.draw = function(ctx) {
+        for (var i = 0; i < this.count; i++) {
+            ctx.fillStyle = 'rgba(255, 255, 255, ' + this[i][3] + ')';
+            ctx.beginPath();
+            ctx.arc(this[i][0], this[i][1], this[i][2], 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.fill();
+        }
+    };
+    
+    self.move = function(dY) {
+        for (var i = 0; i < this.count; i++) {
+            if (this[i][1] - this[i][2] <= spec.height) {
+                this[i][1] += dY;
+            } else {
+                this[i][0] = Math.random() * spec.width;
+                this[i][2] = Math.random() * 100;
+                this[i][1] = 0 - this[i][2];
+                this[i][3] = Math.random() / 2;
+            }
+        }
+    };
+    return self;
+})(board);
+
+
+function start(u) {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.useRAF = true;
     createjs.Ticker.addEventListener("tick", u);
@@ -7,65 +57,17 @@
     };
 }
 
-var board = { width: 320, height: 500 };
-var quit = start(function () { GameLoop(); });
-
+var quit = start(function() { GameLoop(); });
 
 var points = 0;
 var canvas = document.getElementById('c');
 canvas.width = board.width;
 canvas.height = board.height;
 
+
 var ctx = canvas.getContext('2d');
 
-var clear = function() {
-    ctx.fillStyle = '#d0e7f9';
-    ctx.beginPath();
-    //start drawing
-    ctx.rect(0, 0, board.width, board.height);
-    ctx.closePath();
-    //end drawing
-    ctx.fill();
-    //fill rectangle with active
-    //color selected before
-};
-var howManyCircles = 10, circles = [];
 
-for (var i = 0; i < howManyCircles; i++)
-    circles.push([Math.random() * board.width, Math.random() * board.height, Math.random() * 100, Math.random() / 2]);
-//add information about circles into
-//the 'circles' Array. It is x & y positions,
-//radius from 0-100 and transparency
-//from 0-0.5 (0 is invisible, 1 no transparency)
-
-var DrawCircles = function() {
-    for (var i = 0; i < howManyCircles; i++) {
-        ctx.fillStyle = 'rgba(255, 255, 255, ' + circles[i][3] + ')';
-        //white color with transparency in rgba
-        ctx.beginPath();
-        ctx.arc(circles[i][0], circles[i][1], circles[i][2], 0, Math.PI * 2, true);
-        //arc(x, y, radius, startAngle, endAngle, anticlockwise)
-        //circle has always PI*2 end angle
-        ctx.closePath();
-        ctx.fill();
-    }
-};
-
-var MoveCircles = function(deltaY) {
-    for (var i = 0; i < howManyCircles; i++) {
-        if (circles[i][1] - circles[i][2] > board.height) {
-            //the circle is under the screen so we change
-            //informations about it
-            circles[i][0] = Math.random() * board.width;
-            circles[i][2] = Math.random() * 100;
-            circles[i][1] = 0 - circles[i][2];
-            circles[i][3] = Math.random() / 2;
-        } else {
-            //move circle deltaY pixels down
-            circles[i][1] += deltaY;
-        }
-    }
-};
 var player = new (function() {
     //create new object based on function and assign
     //what it returns to the 'player' variable
@@ -154,7 +156,7 @@ var player = new (function() {
             that.setPosition(that.X, that.Y - that.jumpSpeed);
         } else {
             if (that.jumpSpeed > 10) points++; //here!
-            MoveCircles(that.jumpSpeed * 0.5);
+            clouds.move(that.jumpSpeed * 0.5, board);
             //clouds are in the background, further than platforms and player, so we will move it with half speed
 
             platforms.forEach(function(platform, ind) {
@@ -172,14 +174,12 @@ var player = new (function() {
             });
         }
 
-
         that.jumpSpeed--;
         if (that.jumpSpeed == 0) {
             that.isJumping = false;
             that.isFalling = true;
             that.fallSpeed = 1;
         }
-
     };
     that.checkFall = function() {
         if (that.Y < board.height - that.height) {
@@ -241,7 +241,7 @@ var Platform = function(x, y, type) {
 
     that.draw = function() {
         ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-        //it's important to change transparency to '1' before drawing the platforms, in other case they acquire last set transparency in Google Chrome Browser, and because circles in background are semi-transparent it's good idea to fix it. I forgot about that in my 10kApart entry, I think because Firefox and Safari change it by default
+        //it's important to change transparency to '1' before drawing the platforms, in other case they acquire last set transparency in Google Chrome Browser, and because clouds in background are semi-transparent it's good idea to fix it. I forgot about that in my 10kApart entry, I think because Firefox and Safari change it by default
         var gradient = ctx.createRadialGradient(that.x + (platformWidth / 2), that.y + (platformHeight / 2), 5, that.x + (platformWidth / 2), that.y + (platformHeight / 2), 45);
         gradient.addColorStop(0, that.firstColor);
         gradient.addColorStop(1, that.secondColor);
@@ -293,8 +293,7 @@ var GameOver = function() {
     quit();
     //stop calling another frame
     setTimeout(function() {
-        //wait for already called frames to be drawn and then clear everything and render text
-        clear();
+        board.clear(ctx);
         ctx.fillStyle = "Black";
         ctx.font = "10pt Arial";
         ctx.fillText("GAME OVER", board.width / 2 - 60, board.height / 2 - 50);
@@ -303,9 +302,8 @@ var GameOver = function() {
 };
 
 var GameLoop = function() {
-    clear();
-    //MoveCircles(5);
-    DrawCircles();
+    board.clear(ctx);
+    clouds.draw(ctx);
 
     if (player.isJumping) player.checkJump();
     if (player.isFalling) player.checkFall();
