@@ -12,6 +12,124 @@
     return self;
 })();
 
+var player = (function(spec) {
+    var self = new Image();
+    self.src = "angel.png";
+    self.isJumping = false;
+    self.isFalling = false;
+    self.jumpSpeed = 0;
+    self.fallSpeed = 0;
+    self.width = 65;
+    self.height = 95;
+    self.X = 0;
+    self.Y = 0;
+    self.frames = 1;
+    self.actualFrame = 0;
+    self.interval = 0;
+
+    self.move = function(x, y) {
+        self.X = x;
+        self.Y = y;
+    };
+    self.moveLeft = function() {
+        if (self.X > 0) {
+            self.move(self.X - 5, self.Y);
+        }
+    };
+    self.moveRight = function() {
+        if (self.X + self.width < spec.width) {
+            self.move(self.X + 5, self.Y);
+        }
+    };
+    self.draw = function(ctx) {
+        try {
+            ctx.drawImage(
+                self,
+                0,
+                self.height * self.actualFrame,
+                self.width,
+                self.height,
+                self.X,
+                self.Y,
+                self.width,
+                self.height);
+        } catch(e) {
+        }
+
+        if (self.interval == 4) {
+            if (self.actualFrame == self.frames) {
+                self.actualFrame = 0;
+            } else {
+                self.actualFrame++;
+            }
+            self.interval = 0;
+        }
+        self.interval++;
+    };
+    self.jump = function() {
+        if (!self.isJumping && !self.isFalling) {
+            self.fallSpeed = 0;
+            self.isJumping = true;
+            self.jumpSpeed = 17;
+        }
+    };
+    self.checkJump = function(c, p) {
+        if (self.Y > spec.height * 0.4) {
+            self.move(self.X, self.Y - self.jumpSpeed);
+        } else {
+            if (self.jumpSpeed > 10) {
+                points++;
+            }
+            c.move(self.jumpSpeed * 0.5, spec);
+            p.forEach(function(platform, ind) {
+                platform.y += self.jumpSpeed;
+
+                if (platform.y > spec.height) {
+                    var type = ~~(Math.random() * 5);
+                    if (type == 0) {
+                        type = 1;
+                    } else {
+                        type = 0;
+                    }
+                    p[ind] = new Platform(
+                        Math.random() * (spec.width - platformWidth),
+                        platform.y - spec.height,
+                        type);
+                }
+            });
+        }
+
+        self.jumpSpeed--;
+        if (self.jumpSpeed == 0) {
+            self.isJumping = false;
+            self.isFalling = true;
+            self.fallSpeed = 1;
+        }
+    };
+    self.checkFall = function() {
+        if (self.Y < spec.height - self.height) {
+            self.move(self.X, self.Y + self.fallSpeed);
+            self.fallSpeed++;
+        } else {
+            if (points == 0) {
+                self.fallStop();
+            } else {
+                GameOver();
+            }
+        }
+    };
+    self.fallStop = function() {
+        self.isFalling = false;
+        self.fallSpeed = 0;
+        self.jump();
+    };
+    self.move(
+        ~~((spec.width - self.width) / 2),
+        ~~((spec.height - self.height) / 2));
+    self.jump();
+    return self;
+})(board);
+
 var clouds = (function(spec) {
     var self = [];
     self.count = 10;
@@ -31,7 +149,7 @@ var clouds = (function(spec) {
             ctx.fill();
         }
     };
-    
+
     self.move = function(dY) {
         for (var i = 0; i < this.count; i++) {
             if (this[i][1] - this[i][2] <= spec.height) {
@@ -47,165 +165,22 @@ var clouds = (function(spec) {
     return self;
 })(board);
 
-
-function start(u) {
+var quit = (function(u) {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.useRAF = true;
     createjs.Ticker.addEventListener("tick", u);
     return function() {
         createjs.Ticker.removeEventListener("tick", u);
     };
-}
-
-var quit = start(function() { GameLoop(); });
+})(function() { GameLoop(); });
 
 var points = 0;
 var canvas = document.getElementById('c');
 canvas.width = board.width;
 canvas.height = board.height;
 
-
 var ctx = canvas.getContext('2d');
 
-
-var player = new (function() {
-    //create new object based on function and assign
-    //what it returns to the 'player' variable
-
-    var that = this;
-    //'that' will be the context now
-
-    //attributes
-    that.image = new Image();
-    that.image.src = "angel.png";
-    //create new Image and set it's source to the
-    //'angel.png' image I upload above
-
-    //new attributes
-    that.isJumping = false;
-    that.isFalling = false;
-
-    that.jumpSpeed = 0;
-    that.fallSpeed = 0;
-    //each - jumping & falling should have its speed values
-
-    that.width = 65;
-    that.height = 95;
-    that.X = 0;
-    that.Y = 0;
-    //X&Y position
-
-    //methods
-    that.setPosition = function(x, y) {
-        that.X = x;
-        that.Y = y;
-    };
-    that.frames = 1;
-    //number of frames indexed from zero
-    that.actualFrame = 0;
-    //start from which frame
-    that.interval = 0;
-    //we don't need to switch animation frame
-    //on each game loop, interval will helps
-    //with this.
-    that.moveLeft = function() {
-        if (that.X > 0) {
-            //check whether the object is inside the screen
-            that.setPosition(that.X - 5, that.Y);
-        }
-    };
-    that.moveRight = function() {
-        if (that.X + that.width < board.width) {
-            //check whether the object is inside the screen
-            that.setPosition(that.X + 5, that.Y);
-        }
-    };
-    that.draw = function() {
-        try {
-            ctx.drawImage(that.image, 0, that.height * that.actualFrame, that.width, that.height, that.X, that.Y, that.width, that.height);
-            //3rd agument needs to be multiplied by number of frames, so on each loop different frame will be cut from the source image
-        } catch(e) {
-        }
-        ;
-
-        if (that.interval == 4) {
-            if (that.actualFrame == that.frames) {
-                that.actualFrame = 0;
-            } else {
-                that.actualFrame++;
-            }
-            that.interval = 0;
-        }
-        that.interval++;
-        //all that logic above just
-        //switch frames every 4 loops
-    };
-
-    that.jump = function() {
-        //initiation of the jump
-        if (!that.isJumping && !that.isFalling) {
-            //if objects isn't currently jumping or falling (preventing of 'double jumps', or bouncing from the air
-            that.fallSpeed = 0;
-            that.isJumping = true;
-            that.jumpSpeed = 17;
-            // initial velocity
-        }
-    };
-    that.checkJump = function() {
-        if (that.Y > board.height * 0.4) {
-            that.setPosition(that.X, that.Y - that.jumpSpeed);
-        } else {
-            if (that.jumpSpeed > 10) points++; //here!
-            clouds.move(that.jumpSpeed * 0.5, board);
-            //clouds are in the background, further than platforms and player, so we will move it with half speed
-
-            platforms.forEach(function(platform, ind) {
-                platform.y += that.jumpSpeed;
-
-                if (platform.y > board.height) {
-                    //if platform moves outside the screen, we will generate another one on the top
-                    var type = ~~(Math.random() * 5);
-                    if (type == 0)
-                        type = 1;
-                    else
-                        type = 0;
-                    platforms[ind] = new Platform(Math.random() * (board.width - platformWidth), platform.y - board.height, type);
-                }
-            });
-        }
-
-        that.jumpSpeed--;
-        if (that.jumpSpeed == 0) {
-            that.isJumping = false;
-            that.isFalling = true;
-            that.fallSpeed = 1;
-        }
-    };
-    that.checkFall = function() {
-        if (that.Y < board.height - that.height) {
-            that.setPosition(that.X, that.Y + that.fallSpeed);
-            that.fallSpeed++;
-        } else {
-            if (points == 0)
-                //allow player to step on the floor at he beginning of the game
-                that.fallStop();
-            else
-                GameOver();
-        }
-    };
-    that.fallStop = function() {
-        //stop falling, start jumping again
-        that.isFalling = false;
-        that.fallSpeed = 0;
-        that.jump();
-    };
-})();
-//we immediately execute the function above and
-//assign its result to the 'player' variable
-//as a new object
-
-player.setPosition(~~((board.width - player.width) / 2), ~~((board.height - player.height) / 2));
-player.jump();
 //here
 //our character is ready, let's move it
 //to the center of the screen,
@@ -305,11 +280,10 @@ var GameLoop = function() {
     board.clear(ctx);
     clouds.draw(ctx);
 
-    if (player.isJumping) player.checkJump();
-    if (player.isFalling) player.checkFall();
+    if (player.isJumping) player.checkJump(clouds, platforms);
+    if (player.isFalling) player.checkFall(board);
 
-    player.draw();
-    //moving player.draw() above drawing platforms will draw player before, so platforms will be drawn over him. It looks better that way because sometimes angel 'sinks' in the platform with his legs.
+    player.draw(ctx);
 
     platforms.forEach(function(platform, index) {
         if (platform.isMoving) {
@@ -335,9 +309,9 @@ var GameLoop = function() {
 document.onmousemove = function(e) {
     if (player.X + canvas.offsetLeft > e.pageX) {
         //if mouse is on the left side of the player.
-        player.moveLeft();
+        player.moveLeft(board);
     } else if (player.X + canvas.offsetLeft < e.pageX) {
         //or on right?
-        player.moveRight();
+        player.moveRight(board);
     }
 };
