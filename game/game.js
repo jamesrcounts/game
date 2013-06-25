@@ -183,46 +183,22 @@ var ctx = canvas.getContext('2d');
 
 var platform = { width: 70, height: 20 };
 var Platform = function (x, y, type) {
-    //function takes position and platform type
-    var that = this;
-    that.isMoving = ~~(Math.random() * 2);
-    //first, let's check if platform will be able to move (1) or not (0)
-    that.direction = ~~(Math.random() * 2) ? -1 : 1;
-    //and then in which direction
-    that.firstColor = '#FF8C00';
-    that.secondColor = '#EEEE00';
-    that.onCollide = function () {
+    var self = this;
+    self.isMoving = ~~(Math.random() * 2);
+    self.direction = ~~(Math.random() * 2) ? -1 : 1;
+    self.x = ~~x;
+    self.y = y;
+    self.type = type;
+    self.firstColor = type === 1 ? '#AADD00' : '#FF8C00';
+    self.secondColor = type === 1 ? '#698B22' : '#EEEE00';
+
+    self.onCollide = function () {
         player.fallStop();
-    };
-    //if platform type is different than 1, set right color & collision function (in this case just call player's fallStop() method we defined last time
-    if (type === 1) {
-        //but if type is equal '1', set different color and set jumpSpeed to 50. After such an operation checkJump() method will takes substituted '50' instead of default '17' we set in jump().
-        that.firstColor = '#AADD00';
-        that.secondColor = '#698B22';
-        that.onCollide = function () {
-            player.fallStop();
+        if (type === 1) {
             player.jumpSpeed = 50;
-        };
-    }
-
-    that.x = ~~x;
-    that.y = y;
-    that.type = type;
-
-    that.draw = function () {
-        ctx.fillStyle = 'rgba(255, 255, 255, 1)';
-        //it's important to change transparency to '1' before drawing the platforms, in other case they acquire last set transparency in Google Chrome Browser, and because clouds in background are semi-transparent it's good idea to fix it. I forgot about that in my 10kApart entry, I think because Firefox and Safari change it by default
-        var gradient = ctx.createRadialGradient(that.x + (platform.width / 2), that.y + (platform.height / 2), 5,
-            that.x + (platform.width / 2),
-            that.y + (platform.height / 2), 45);
-        gradient.addColorStop(0, that.firstColor);
-        gradient.addColorStop(1, that.secondColor);
-        ctx.fillStyle = gradient;
-        ctx.fillRect(that.x, that.y, platform.width, platform.height);
-        //drawing gradient inside rectangular platform
+        }
     };
-
-    return that;
+    return self;
 };
 
 var platforms = (function (spec, pspec) {
@@ -242,72 +218,85 @@ var platforms = (function (spec, pspec) {
             position += ~~(spec.height / self.count);
         }
     }
+
+    self.draw = function (ctx) {
+        for (var i = 0; i < this.count; i++) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 1)';
+            var gradient = ctx.createRadialGradient(
+                this[i].x + (platform.width / 2),
+                this[i].y + (platform.height / 2),
+                5,
+                this[i].x + (platform.width / 2),
+                this[i].y + (platform.height / 2),
+                45);
+            gradient.addColorStop(0, this[i].firstColor);
+            gradient.addColorStop(1, this[i].secondColor);
+            ctx.fillStyle = gradient;
+            ctx.fillRect(
+                this[i].x,
+                this[i].y,
+                platform.width,
+                platform.height);
+        }
+    };
+
     return self;
 })(board, platform);
 
-var checkCollision = function () {
-    platforms.forEach(function (e) {
-        //check every plaftorm
-        if ((player.isFalling) &&
-            //only when player is falling
-            (player.X < e.x + platform.width) &&
-            (player.X + player.width > e.x) &&
-            (player.Y + player.height > e.y) &&
-            (player.Y + player.height < e.y + platform.height)
-            //and is directly over the platform
-        ) {
-            e.onCollide();
-        }
-    });
-};
 var GameOver = function () {
     quit();
-    //stop calling another frame
-    setTimeout(function () {
-        board.clear(ctx);
-        ctx.fillStyle = "Black";
-        ctx.font = "10pt Arial";
-        ctx.fillText("GAME OVER", board.width / 2 - 60, board.height / 2 - 50);
-        ctx.fillText("YOUR RESULT:" + points, board.width / 2 - 60, board.height / 2 - 30);
-    }, 100);
+    board.clear(ctx);
+    ctx.fillStyle = "Black";
+    ctx.font = "10pt Arial";
+    ctx.fillText("GAME OVER", board.width / 2 - 60, board.height / 2 - 50);
+    ctx.fillText("YOUR RESULT:" + points, board.width / 2 - 60, board.height / 2 - 30);
 };
 
 var GameLoop = function () {
     board.clear(ctx);
     clouds.draw(ctx);
 
-    if (player.isJumping) player.checkJump(clouds, platforms, platform.width);
-    if (player.isFalling) player.checkFall(board);
+    if (player.isJumping) {
+        player.checkJump(clouds, platforms, platform.width);
+    }
+
+    if (player.isFalling) {
+        player.checkFall(board);
+    }
 
     player.draw(ctx);
 
     platforms.forEach(function (platform, index) {
         if (platform.isMoving) {
-            //if platform is able to move
             if (platform.x < 0) {
-                //and if is on the end of the screen
                 platform.direction = 1;
             } else if (platform.x > board.width - platform.width) {
                 platform.direction = -1;
-                //switch direction and start moving in the opposite direction
             }
             platform.x += platform.direction * (index / 2) * ~~(points / 100);
-            //with speed dependent on the index in platforms[] array (to avoid moving all the displayed platforms with the same speed, it looks ugly) and number of points
         }
-        platform.draw();
     });
-    checkCollision();
+
+    platforms.draw(ctx);
+
+    platforms.forEach(function (e) {
+        if (player.isFalling &&
+            player.X < e.x + platform.width &&
+            player.X + player.width > e.x &&
+            player.Y + player.height > e.y &&
+            player.Y + player.height < e.y + platform.height) {
+            e.onCollide();
+        }
+    });
+
     ctx.fillStyle = "Black";
-    //change active color to black
     ctx.fillText("POINTS:" + points, 10, board.height - 10);
-    //and add text in the left-bottom corner of the canvas
 };
+
 document.onmousemove = function (e) {
     if (player.X + canvas.offsetLeft > e.pageX) {
-        //if mouse is on the left side of the player.
         player.moveLeft(board);
     } else if (player.X + canvas.offsetLeft < e.pageX) {
-        //or on right?
         player.moveRight(board);
     }
 };
