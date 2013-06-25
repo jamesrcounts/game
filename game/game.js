@@ -73,7 +73,7 @@ var player = (function(spec) {
             self.jumpSpeed = 17;
         }
     };
-    self.checkJump = function(c, p) {
+    self.checkJump = function(c, p, w) {
         if (self.Y > spec.height * 0.4) {
             self.move(self.X, self.Y - self.jumpSpeed);
         } else {
@@ -92,7 +92,7 @@ var player = (function(spec) {
                         type = 0;
                     }
                     p[ind] = new Platform(
-                        Math.random() * (spec.width - platformWidth),
+                        Math.random() * (spec.width - w),
                         platform.y - spec.height,
                         type);
                 }
@@ -181,12 +181,7 @@ canvas.height = board.height;
 
 var ctx = canvas.getContext('2d');
 
-//here
-//our character is ready, let's move it
-//to the center of the screen,
-//'~~' returns nearest lower integer from
-//given float, equivalent of Math.floor()c
-
+var platform = { width: 70, height: 20 };
 var Platform = function(x, y, type) {
     //function takes position and platform type
     var that = this;
@@ -217,21 +212,26 @@ var Platform = function(x, y, type) {
     that.draw = function() {
         ctx.fillStyle = 'rgba(255, 255, 255, 1)';
         //it's important to change transparency to '1' before drawing the platforms, in other case they acquire last set transparency in Google Chrome Browser, and because clouds in background are semi-transparent it's good idea to fix it. I forgot about that in my 10kApart entry, I think because Firefox and Safari change it by default
-        var gradient = ctx.createRadialGradient(that.x + (platformWidth / 2), that.y + (platformHeight / 2), 5, that.x + (platformWidth / 2), that.y + (platformHeight / 2), 45);
+        var gradient = ctx.createRadialGradient(that.x + (platform.width / 2), that.y + (platform.height / 2), 5,
+            that.x + (platform.width / 2),
+            that.y + (platform.height / 2), 45);
         gradient.addColorStop(0, that.firstColor);
         gradient.addColorStop(1, that.secondColor);
         ctx.fillStyle = gradient;
-        ctx.fillRect(that.x, that.y, platformWidth, platformHeight);
+        ctx.fillRect(that.x, that.y, platform.width, platform.height);
         //drawing gradient inside rectangular platform
     };
 
     return that;
 };
 
-var nrOfPlatforms = 7,
-    platforms = [],
-    platformWidth = 70,
-    platformHeight = 20;
+var nrOfPlatforms = 7;
+var platforms = (function() {
+    var self = [];
+    return self;
+})();
+
+
 //global (so far) variables are not the best place for storing platform size information, but in case it will be needed to calculate collisions I put it here, not as a Platform attributes
 var generatePlatforms = function() {
     var position = 0, type;
@@ -241,9 +241,9 @@ var generatePlatforms = function() {
         if (type == 0) type = 1;
         else type = 0;
         //it's 5 times more possible to get 'ordinary' platform than 'super' one
-        platforms[i] = new Platform(Math.random() * (board.width - platformWidth), position, type);
+        platforms[i] = new Platform(Math.random() * (board.width - platform.width), position, type);
         //random X position
-        if (position < board.height - platformHeight)
+        if (position < board.height - platform.height)
             position += ~~(board.height / nrOfPlatforms);
     }
     //and Y position interval
@@ -254,10 +254,10 @@ var checkCollision = function() {
         //check every plaftorm
         if ((player.isFalling) &&
             //only when player is falling
-            (player.X < e.x + platformWidth) &&
+            (player.X < e.x + platform.width) &&
             (player.X + player.width > e.x) &&
             (player.Y + player.height > e.y) &&
-            (player.Y + player.height < e.y + platformHeight)
+            (player.Y + player.height < e.y + platform.height)
             //and is directly over the platform
         ) {
             e.onCollide();
@@ -280,7 +280,7 @@ var GameLoop = function() {
     board.clear(ctx);
     clouds.draw(ctx);
 
-    if (player.isJumping) player.checkJump(clouds, platforms);
+    if (player.isJumping) player.checkJump(clouds, platforms, platform.width);
     if (player.isFalling) player.checkFall(board);
 
     player.draw(ctx);
@@ -291,7 +291,7 @@ var GameLoop = function() {
             if (platform.x < 0) {
                 //and if is on the end of the screen
                 platform.direction = 1;
-            } else if (platform.x > board.width - platformWidth) {
+            } else if (platform.x > board.width - platform.width) {
                 platform.direction = -1;
                 //switch direction and start moving in the opposite direction
             }
