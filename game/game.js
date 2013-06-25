@@ -1,34 +1,28 @@
-﻿var width = 320;
-//width of the canvas
-var height = 500;
-var gloop;
-//height of the canvas
+﻿function start(u) {
+    createjs.Ticker.setFPS(60);
+    createjs.Ticker.useRAF = true;
+    createjs.Ticker.addEventListener("tick", u);
+    return function() {
+        createjs.Ticker.removeEventListener("tick", u);
+    };
+}
+
+var board = { width: 320, height: 500 };
+var quit = start(function () { GameLoop(); });
+
+
 var points = 0;
-//adding points to global variables
-var c = document.getElementById('c');
-//canvas itself
-state = true;
+var canvas = document.getElementById('c');
+canvas.width = board.width;
+canvas.height = board.height;
 
-var ctx = c.getContext('2d');
-//and two-dimensional graphic context of the
-//canvas, the only one supported by all
-//browsers for now
-
-c.width = width;
-c.height = height;
-//setting canvas size
+var ctx = canvas.getContext('2d');
 
 var clear = function() {
     ctx.fillStyle = '#d0e7f9';
-    //set active color to #d0e... (nice blue)
-    //UPDATE - as 'Ped7g' noticed - using clearRect() in here is useless, we cover whole surface of the canvas with blue rectangle two lines below. I just forget to remove that line
-    //ctx.clearRect(0, 0, width, height);
-    //clear whole surface
     ctx.beginPath();
     //start drawing
-    ctx.rect(0, 0, width, height);
-    //draw rectangle from point (0, 0) to
-    //(width, height) covering whole canvas
+    ctx.rect(0, 0, board.width, board.height);
     ctx.closePath();
     //end drawing
     ctx.fill();
@@ -38,7 +32,7 @@ var clear = function() {
 var howManyCircles = 10, circles = [];
 
 for (var i = 0; i < howManyCircles; i++)
-    circles.push([Math.random() * width, Math.random() * height, Math.random() * 100, Math.random() / 2]);
+    circles.push([Math.random() * board.width, Math.random() * board.height, Math.random() * 100, Math.random() / 2]);
 //add information about circles into
 //the 'circles' Array. It is x & y positions,
 //radius from 0-100 and transparency
@@ -59,10 +53,10 @@ var DrawCircles = function() {
 
 var MoveCircles = function(deltaY) {
     for (var i = 0; i < howManyCircles; i++) {
-        if (circles[i][1] - circles[i][2] > height) {
+        if (circles[i][1] - circles[i][2] > board.height) {
             //the circle is under the screen so we change
             //informations about it
-            circles[i][0] = Math.random() * width;
+            circles[i][0] = Math.random() * board.width;
             circles[i][2] = Math.random() * 100;
             circles[i][1] = 0 - circles[i][2];
             circles[i][3] = Math.random() / 2;
@@ -88,17 +82,13 @@ var player = new (function() {
     //new attributes
     that.isJumping = false;
     that.isFalling = false;
-    //state of the object described by bool variables - is it rising or falling?
 
     that.jumpSpeed = 0;
     that.fallSpeed = 0;
     //each - jumping & falling should have its speed values
 
     that.width = 65;
-    //width of the single frame
     that.height = 95;
-    //height of the single frame
-
     that.X = 0;
     that.Y = 0;
     //X&Y position
@@ -123,7 +113,7 @@ var player = new (function() {
         }
     };
     that.moveRight = function() {
-        if (that.X + that.width < width) {
+        if (that.X + that.width < board.width) {
             //check whether the object is inside the screen
             that.setPosition(that.X + 5, that.Y);
         }
@@ -160,7 +150,7 @@ var player = new (function() {
         }
     };
     that.checkJump = function() {
-        if (that.Y > height * 0.4) {
+        if (that.Y > board.height * 0.4) {
             that.setPosition(that.X, that.Y - that.jumpSpeed);
         } else {
             if (that.jumpSpeed > 10) points++; //here!
@@ -170,14 +160,14 @@ var player = new (function() {
             platforms.forEach(function(platform, ind) {
                 platform.y += that.jumpSpeed;
 
-                if (platform.y > height) {
+                if (platform.y > board.height) {
                     //if platform moves outside the screen, we will generate another one on the top
                     var type = ~~(Math.random() * 5);
                     if (type == 0)
                         type = 1;
                     else
                         type = 0;
-                    platforms[ind] = new Platform(Math.random() * (width - platformWidth), platform.y - height, type);
+                    platforms[ind] = new Platform(Math.random() * (board.width - platformWidth), platform.y - board.height, type);
                 }
             });
         }
@@ -191,8 +181,8 @@ var player = new (function() {
         }
 
     };
-    that.checkFall = function () {
-        if (that.Y < height - that.height) {
+    that.checkFall = function() {
+        if (that.Y < board.height - that.height) {
             that.setPosition(that.X, that.Y + that.fallSpeed);
             that.fallSpeed++;
         } else {
@@ -214,7 +204,7 @@ var player = new (function() {
 //assign its result to the 'player' variable
 //as a new object
 
-player.setPosition(~~((width - player.width) / 2), ~~((height - player.height) / 2));
+player.setPosition(~~((board.width - player.width) / 2), ~~((board.height - player.height) / 2));
 player.jump();
 //here
 //our character is ready, let's move it
@@ -276,10 +266,10 @@ var generatePlatforms = function() {
         if (type == 0) type = 1;
         else type = 0;
         //it's 5 times more possible to get 'ordinary' platform than 'super' one
-        platforms[i] = new Platform(Math.random() * (width - platformWidth), position, type);
+        platforms[i] = new Platform(Math.random() * (board.width - platformWidth), position, type);
         //random X position
-        if (position < height - platformHeight)
-            position += ~~(height / nrOfPlatforms);
+        if (position < board.height - platformHeight)
+            position += ~~(board.height / nrOfPlatforms);
     }
     //and Y position interval
 }();
@@ -299,18 +289,16 @@ var checkCollision = function() {
         }
     });
 };
-var GameOver = function () {
-    window.state = false;
-    //set state to false
-    clearTimeout(gLoop);
+var GameOver = function() {
+    quit();
     //stop calling another frame
-    setTimeout(function () {
+    setTimeout(function() {
         //wait for already called frames to be drawn and then clear everything and render text
         clear();
         ctx.fillStyle = "Black";
         ctx.font = "10pt Arial";
-        ctx.fillText("GAME OVER", width / 2 - 60, height / 2 - 50);
-        ctx.fillText("YOUR RESULT:" + points, width / 2 - 60, height / 2 - 30);
+        ctx.fillText("GAME OVER", board.width / 2 - 60, board.height / 2 - 50);
+        ctx.fillText("YOUR RESULT:" + points, board.width / 2 - 60, board.height / 2 - 30);
     }, 100);
 };
 
@@ -331,7 +319,7 @@ var GameLoop = function() {
             if (platform.x < 0) {
                 //and if is on the end of the screen
                 platform.direction = 1;
-            } else if (platform.x > width - platformWidth) {
+            } else if (platform.x > board.width - platformWidth) {
                 platform.direction = -1;
                 //switch direction and start moving in the opposite direction
             }
@@ -343,17 +331,15 @@ var GameLoop = function() {
     checkCollision();
     ctx.fillStyle = "Black";
     //change active color to black
-    ctx.fillText("POINTS:" + points, 10, height - 10);
+    ctx.fillText("POINTS:" + points, 10, board.height - 10);
     //and add text in the left-bottom corner of the canvas
-    if (state) window.gLoop = setTimeout(GameLoop, 1000 / 50);
 };
 document.onmousemove = function(e) {
-    if (player.X + c.offsetLeft > e.pageX) {
+    if (player.X + canvas.offsetLeft > e.pageX) {
         //if mouse is on the left side of the player.
         player.moveLeft();
-    } else if (player.X + c.offsetLeft < e.pageX) {
+    } else if (player.X + canvas.offsetLeft < e.pageX) {
         //or on right?
         player.moveRight();
     }
 };
-GameLoop();
