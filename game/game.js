@@ -27,35 +27,52 @@ var player = (function(spec) {
     self.actualFrame = 0;
     self.interval = 0;
 
-    self.move = function(x, y) {
+    self.moveTo = function(x, y) {
         self.X = x;
         self.Y = y;
     };
     self.moveLeft = function() {
         if (self.X > 0) {
-            self.move(self.X - 5, self.Y);
+            self.moveTo(self.X - 5, self.Y);
         }
     };
     self.moveRight = function() {
         if (self.X + self.width < spec.width) {
-            self.move(self.X + 5, self.Y);
+            self.moveTo(self.X + 5, self.Y);
         }
     };
-    
 
-    self.update = function(clouds, platforms, width) {
-
+    self.move = function() {
+        var remainder = 0;
         if (this.isJumping) {
-            this.checkJump(clouds, platforms, width);
+            if (this.Y > spec.height * 0.4) {
+                this.moveTo(this.X, this.Y - this.jumpSpeed);
+            } else {
+                remainder = this.jumpSpeed;
+            }
+
+            this.jumpSpeed--;
+            if (this.jumpSpeed == 0) {
+                this.isJumping = false;
+                this.isFalling = true;
+                this.fallSpeed = 1;
+            }
         }
 
         if (this.isFalling) {
-            this.checkFall(spec);
+            if (this.Y < spec.height - this.height) {
+                this.moveTo(this.X, this.Y + this.fallSpeed);
+                this.fallSpeed++;
+            } else {
+                this.checkEndGame();
+                this.fallStop();
+            }
         }
+
+        return remainder;
     };
-    
-    self.draw = function(ctx, clouds, platforms, width) {
-        self.update(clouds, platforms, width);
+
+    self.draw = function(ctx) {
         try {
             ctx.drawImage(
                 self,
@@ -87,57 +104,16 @@ var player = (function(spec) {
             self.jumpSpeed = 17;
         }
     };
-    self.checkJump = function(c, p, w) {
-        if (self.Y > spec.height * 0.4) {
-            self.move(self.X, self.Y - self.jumpSpeed);
-        } else {
-            if (self.jumpSpeed > 10) {
-                points++;
-            }
-            c.move(self.jumpSpeed * 0.5, spec);
-            p.forEach(function(platform, ind) {
-                platform.y += self.jumpSpeed;
 
-                if (platform.y > spec.height) {
-                    var type = ~~(Math.random() * 5);
-                    if (type == 0) {
-                        type = 1;
-                    } else {
-                        type = 0;
-                    }
-                    p[ind] = new Platform(
-                        Math.random() * (spec.width - w),
-                        platform.y - spec.height,
-                        type);
-                }
-            });
-        }
+    self.checkEndGame = function() {
+    };
 
-        self.jumpSpeed--;
-        if (self.jumpSpeed == 0) {
-            self.isJumping = false;
-            self.isFalling = true;
-            self.fallSpeed = 1;
-        }
-    };
-    self.checkFall = function() {
-        if (self.Y < spec.height - self.height) {
-            self.move(self.X, self.Y + self.fallSpeed);
-            self.fallSpeed++;
-        } else {
-            if (points == 0) {
-                self.fallStop();
-            } else {
-                GameOver();
-            }
-        }
-    };
     self.fallStop = function() {
         self.isFalling = false;
         self.fallSpeed = 0;
         self.jump();
     };
-    self.move(
+    self.moveTo(
         ~~((spec.width - self.width) / 2),
         ~~((spec.height - self.height) / 2));
     self.jump();
@@ -186,9 +162,15 @@ var quit = (function(u) {
     return function() {
         createjs.Ticker.removeEventListener("tick", u);
     };
-})(function() { GameLoop(); });
+})(function() { gameLoop(); });
 
 var points = 0;
+player.checkEndGame = function() {
+    if (points != 0) {
+        endGame();
+    }
+};
+
 var canvas = document.getElementById('c');
 canvas.width = board.width;
 canvas.height = board.height;
@@ -233,18 +215,6 @@ var platforms = (function(spec, pspec) {
         }
     }
 
-    self.checkCollision = function(hero) {
-        for (var i = 0; i < this.count; i++) {
-            if (hero.isFalling &&
-                hero.X < this[i].x + platform.width &&
-                hero.X + hero.width > this[i].x &&
-                hero.Y + hero.height > this[i].y &&
-                hero.Y + hero.height < this[i].y + platform.height) {
-                this[i].onCollide();
-            }
-        }
-    };
-
     self.update = function(hero) {
         for (var i = 0; i < this.count; i++) {
             if (this[i].isMoving) {
@@ -255,8 +225,14 @@ var platforms = (function(spec, pspec) {
                 }
                 this[i].x += this[i].direction * (i / 2) * ~~(points / 100);
             }
+            if (hero.isFalling &&
+                hero.X < this[i].x + platform.width &&
+                hero.X + hero.width > this[i].x &&
+                hero.Y + hero.height > this[i].y &&
+                hero.Y + hero.height < this[i].y + platform.height) {
+                this[i].onCollide();
+            }
         }
-        this.checkCollision(hero);
     };
 
     self.draw = function(ctx, hero) {
@@ -281,10 +257,22 @@ var platforms = (function(spec, pspec) {
         }
     };
 
+    self.move = function(deltaY) {
+        for (var i = 0; i < this.count; i++) {
+            this[i].y += deltaY;
+
+            if (this[i].y > board.height) {
+                this[i] = new Platform(
+                    Math.random() * (board.width - platform.width),
+                    this[i].y - board.height,
+                    ~~(Math.random() * 5) == 0 ? 1 : 0);
+            }
+        }
+    };
     return self;
 })(board, platform);
 
-var GameOver = function() {
+var endGame = function() {
     quit();
     board.clear(ctx);
     ctx.fillStyle = "Black";
@@ -293,13 +281,26 @@ var GameOver = function() {
     ctx.fillText("YOUR RESULT:" + points, board.width / 2 - 60, board.height / 2 - 30);
 };
 
-var GameLoop = function() {
-    board.clear(ctx);
-    clouds.draw(ctx);
+var updatePieces = function(hero, clouds, platforms) {
+    var remainder = hero.move();
+    clouds.move(remainder * 0.5);
+    platforms.move(remainder);
+};
 
-    player.draw(ctx, clouds, platforms, platform.width);
+var updateView = function(c) {
+    board.clear(c);
+    clouds.draw(c);
+    player.draw(c);
+    platforms.draw(c, player);
+};
 
-    platforms.draw(ctx, player);
+var gameLoop = function() {
+    updatePieces(player, clouds, platforms);
+    updateView(ctx);
+
+    if (10 < player.jumpSpeed) {
+        points++;
+    }
 
     ctx.fillStyle = "Black";
     ctx.fillText("POINTS:" + points, 10, board.height - 10);
