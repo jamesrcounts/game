@@ -1,7 +1,9 @@
-﻿var board = (function() {
-    var self = { width: 320, height: 500, color: '#d0e7f9' };
+﻿var canvas;
 
-    self.clear = function(ctx) {
+var board = (function () {
+    var self = { width: 320, height: 500, color: '#d0e7f9' }, ctx;
+
+    self.draw = function () {
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.rect(0, 0, this.width, this.height);
@@ -9,10 +11,44 @@
         ctx.fill();
     };
 
+    self.setupCanvas = function (id) {
+        var c;
+
+        c = document.getElementById(id);
+        c.width = this.width;
+        c.height = this.height;
+        ctx = c.getContext('2d');
+
+        return c;
+    };
+
+    self.context = function () {
+        return ctx;
+    };
+
     return self;
 })();
 
-var player = (function(spec) {
+canvas = board.setupCanvas('c');
+
+var points = (function (spec) {
+    var self = { value: 0 };
+    self.update = function (deltaY) {
+        if (10 < deltaY) {
+            this.value++;
+        }
+    };
+
+    self.draw = function () {
+        var ctx = spec.context();
+        ctx.fillStyle = "Black";
+        ctx.fillText("POINTS:" + this.value, 10, spec.height - 10);
+    };
+
+    return self;
+})(board);
+
+var player = (function (spec) {
     var self = new Image();
     self.src = "angel.png";
     self.isJumping = false;
@@ -27,22 +63,22 @@ var player = (function(spec) {
     self.actualFrame = 0;
     self.interval = 0;
 
-    self.moveTo = function(x, y) {
+    self.moveTo = function (x, y) {
         self.X = x;
         self.Y = y;
     };
-    self.moveLeft = function() {
+    self.moveLeft = function () {
         if (self.X > 0) {
             self.moveTo(self.X - 5, self.Y);
         }
     };
-    self.moveRight = function() {
+    self.moveRight = function () {
         if (self.X + self.width < spec.width) {
             self.moveTo(self.X + 5, self.Y);
         }
     };
 
-    self.move = function() {
+    self.update = function () {
         var remainder = 0;
         if (this.isJumping) {
             if (this.Y > spec.height * 0.4) {
@@ -72,9 +108,9 @@ var player = (function(spec) {
         return remainder;
     };
 
-    self.draw = function(ctx) {
+    self.draw = function () {
         try {
-            ctx.drawImage(
+            spec.context().drawImage(
                 self,
                 0,
                 self.height * self.actualFrame,
@@ -84,7 +120,7 @@ var player = (function(spec) {
                 self.Y,
                 self.width,
                 self.height);
-        } catch(e) {
+        } catch (e) {
         }
 
         if (self.interval == 4) {
@@ -97,7 +133,7 @@ var player = (function(spec) {
         }
         self.interval++;
     };
-    self.jump = function() {
+    self.jump = function () {
         if (!self.isJumping && !self.isFalling) {
             self.fallSpeed = 0;
             self.isJumping = true;
@@ -105,10 +141,10 @@ var player = (function(spec) {
         }
     };
 
-    self.checkEndGame = function() {
+    self.checkEndGame = function () {
     };
 
-    self.fallStop = function() {
+    self.fallStop = function () {
         self.isFalling = false;
         self.fallSpeed = 0;
         self.jump();
@@ -120,7 +156,13 @@ var player = (function(spec) {
     return self;
 })(board);
 
-var clouds = (function(spec) {
+player.checkEndGame = function () {
+    if (points != 0) {
+        endGame();
+    }
+};
+
+var clouds = (function (spec) {
     var self = [];
     self.count = 10;
     for (var j = 0; j < self.count; j++) {
@@ -130,7 +172,8 @@ var clouds = (function(spec) {
             Math.random() / 2]);
     }
 
-    self.draw = function(ctx) {
+    self.draw = function () {
+        var ctx = spec.context();
         for (var i = 0; i < this.count; i++) {
             ctx.fillStyle = 'rgba(255, 255, 255, ' + this[i][3] + ')';
             ctx.beginPath();
@@ -140,10 +183,10 @@ var clouds = (function(spec) {
         }
     };
 
-    self.move = function(dY) {
+    self.update = function (deltaY) {
         for (var i = 0; i < this.count; i++) {
             if (this[i][1] - this[i][2] <= spec.height) {
-                this[i][1] += dY;
+                this[i][1] += deltaY;
             } else {
                 this[i][0] = Math.random() * spec.width;
                 this[i][2] = Math.random() * 100;
@@ -155,31 +198,17 @@ var clouds = (function(spec) {
     return self;
 })(board);
 
-var quit = (function(u) {
+var quit = (function (u) {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.useRAF = true;
     createjs.Ticker.addEventListener("tick", u);
-    return function() {
+    return function () {
         createjs.Ticker.removeEventListener("tick", u);
     };
-})(function() { gameLoop(); });
+})(function () { gameLoop(); });
 
-var points = 0;
-player.checkEndGame = function() {
-    if (points != 0) {
-        endGame();
-    }
-};
-
-var canvas = document.getElementById('c');
-canvas.width = board.width;
-canvas.height = board.height;
-
-var ctx = canvas.getContext('2d');
-
-var platform = { width: 70, height: 20 };
-var Platform = function(x, y, type) {
-    var self = this;
+var Platform = function (x, y, type) {
+    var self = { width: 70, height: 20 };
     self.isMoving = ~~(Math.random() * 2);
     self.direction = ~~(Math.random() * 2) ? -1 : 1;
     self.x = ~~x;
@@ -188,7 +217,7 @@ var Platform = function(x, y, type) {
     self.firstColor = type === 1 ? '#AADD00' : '#FF8C00';
     self.secondColor = type === 1 ? '#698B22' : '#EEEE00';
 
-    self.onCollide = function() {
+    self.onCollide = function () {
         player.fallStop();
         if (type === 1) {
             player.jumpSpeed = 50;
@@ -197,7 +226,7 @@ var Platform = function(x, y, type) {
     return self;
 };
 
-var platforms = (function(spec, pspec) {
+var platforms = (function (spec) {
     var self = [];
     var position = 0;
     var type;
@@ -207,44 +236,26 @@ var platforms = (function(spec, pspec) {
         type = ~~(Math.random() * 5);
         type = type == 0 ? 1 : 0;
         self[j] = new Platform(
-            Math.random() * (spec.width - pspec.width),
+            0,
             position,
             type);
-        if (position < spec.height - pspec.height) {
+        self[j].x = Math.random() * (spec.width - self[j].width);
+
+        if (position < spec.height - self[j].height) {
             position += ~~(spec.height / self.count);
         }
     }
 
-    self.update = function(hero) {
-        for (var i = 0; i < this.count; i++) {
-            if (this[i].isMoving) {
-                if (this[i].x < 0) {
-                    this[i].direction = 1;
-                } else if (this[i].x > spec.width - platform.width) {
-                    this[i].direction = -1;
-                }
-                this[i].x += this[i].direction * (i / 2) * ~~(points / 100);
-            }
-            if (hero.isFalling &&
-                hero.X < this[i].x + platform.width &&
-                hero.X + hero.width > this[i].x &&
-                hero.Y + hero.height > this[i].y &&
-                hero.Y + hero.height < this[i].y + platform.height) {
-                this[i].onCollide();
-            }
-        }
-    };
-
-    self.draw = function(ctx, hero) {
-        this.update(hero);
+    self.draw = function () {
+        var ctx = spec.context();
         for (var i = 0; i < this.count; i++) {
             ctx.fillStyle = 'rgba(255, 255, 255, 1)';
             var gradient = ctx.createRadialGradient(
-                this[i].x + (platform.width / 2),
-                this[i].y + (platform.height / 2),
+                this[i].x + (this[i].width / 2),
+                this[i].y + (this[i].height / 2),
                 5,
-                this[i].x + (platform.width / 2),
-                this[i].y + (platform.height / 2),
+                this[i].x + (this[i].width / 2),
+                this[i].y + (this[i].height / 2),
                 45);
             gradient.addColorStop(0, this[i].firstColor);
             gradient.addColorStop(1, this[i].secondColor);
@@ -252,61 +263,80 @@ var platforms = (function(spec, pspec) {
             ctx.fillRect(
                 this[i].x,
                 this[i].y,
-                platform.width,
-                platform.height);
+                this[i].width,
+                this[i].height);
         }
     };
 
-    self.move = function(deltaY) {
+    self.update = function (deltaY) {
         for (var i = 0; i < this.count; i++) {
+            if (this[i].isMoving) {
+                if (this[i].x < 0) {
+                    this[i].direction = 1;
+                } else if (this[i].x > spec.width - this[i].width) {
+                    this[i].direction = -1;
+                }
+                this[i].x += this[i].direction * (i / 2) * ~~(points / 100);
+            }
+
             this[i].y += deltaY;
 
             if (this[i].y > board.height) {
                 this[i] = new Platform(
-                    Math.random() * (board.width - platform.width),
+                    Math.random() * (board.width - this[i].width),
                     this[i].y - board.height,
                     ~~(Math.random() * 5) == 0 ? 1 : 0);
             }
         }
     };
     return self;
-})(board, platform);
+})(board);
 
-var endGame = function() {
+var endGame = function () {
+    var ctx = board.context();
     quit();
-    board.clear(ctx);
+    board.draw();
     ctx.fillStyle = "Black";
     ctx.font = "10pt Arial";
     ctx.fillText("GAME OVER", board.width / 2 - 60, board.height / 2 - 50);
-    ctx.fillText("YOUR RESULT:" + points, board.width / 2 - 60, board.height / 2 - 30);
+    ctx.fillText("YOUR RESULT:" + points.value, board.width / 2 - 60, board.height / 2 - 30);
 };
 
-var updatePieces = function(hero, clouds, platforms) {
-    var remainder = hero.move();
-    clouds.move(remainder * 0.5);
-    platforms.move(remainder);
-};
-
-var updateView = function(c) {
-    board.clear(c);
-    clouds.draw(c);
-    player.draw(c);
-    platforms.draw(c, player);
-};
-
-var gameLoop = function() {
-    updatePieces(player, clouds, platforms);
-    updateView(ctx);
-
-    if (10 < player.jumpSpeed) {
-        points++;
+var checkCollisions = function (hero, platforms) {
+    for (var i = 0; i < platforms.count; i++) {
+        if (hero.isFalling &&
+            hero.X < platforms[i].x + platforms[i].width &&
+            hero.X + hero.width > platforms[i].x &&
+            hero.Y + hero.height > platforms[i].y &&
+            hero.Y + hero.height < platforms[i].y + platforms[i].height) {
+            platforms[i].onCollide();
+        }
     }
-
-    ctx.fillStyle = "Black";
-    ctx.fillText("POINTS:" + points, 10, board.height - 10);
 };
 
-document.onmousemove = function(e) {
+var updatePieces = function (hero, clouds, platforms) {
+    var speed;
+
+    checkCollisions(hero, platforms);
+    speed = hero.update();
+    clouds.update(speed * 0.5);
+    platforms.update(speed);
+    points.update(hero.jumpSpeed);
+};
+
+var updateView = function () {
+    var l = arguments.length;
+    for (var i = 0; i < l; i++) {
+        arguments[i].draw();
+    }
+};
+
+var gameLoop = function () {
+    updatePieces(player, clouds, platforms, points);
+    updateView(board, clouds, player, platforms, points);
+};
+
+document.onmousemove = function (e) {
     if (player.X + canvas.offsetLeft > e.pageX) {
         player.moveLeft(board);
     } else if (player.X + canvas.offsetLeft < e.pageX) {
