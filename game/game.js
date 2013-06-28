@@ -1,6 +1,52 @@
-﻿var canvas;
+﻿var board
+    , canvas
+    , checkCollisions
+    , clouds
+    , controls
+    , endGame
+    , gameLoop
+    , toggleGameLoop
+    , platforms
+    , player
+    , points
+    , updatePieces
+    , updateView;
 
-var board = (function() {
+function createMouseControls(ref) {
+    var self = {};
+    self.left = function() {
+    };
+    self.right = function() {
+    };
+    self.togglePlay = function() {
+    };
+
+    function pointerToTheLeft(e) {
+        return ref.X + canvas.offsetLeft > e.pageX;
+    }
+
+    function pointerToTheRight(e) {
+        return ref.X + canvas.offsetLeft < e.pageX;
+    }
+
+    document.onmousemove = function(e) {
+        if (pointerToTheLeft(e)) {
+            self.left();
+        } else if (pointerToTheRight(e)) {
+            self.right();
+        }
+    };
+
+    document.onmousedown = function (e) {
+        if (e.which == 2 || e.which == 3) {
+            self.togglePlay();
+        }
+    };
+
+    return self;
+}
+
+board = (function() {
     var self = { width: 320, height: 500, color: '#d0e7f9' }, ctx;
 
     self.draw = function() {
@@ -31,7 +77,7 @@ var board = (function() {
 
 canvas = board.setupCanvas('c');
 
-var points = (function(spec) {
+points = (function(spec) {
     var self = { value: 0 };
     self.update = function(deltaY) {
         if (10 < deltaY) {
@@ -48,7 +94,7 @@ var points = (function(spec) {
     return self;
 })(board);
 
-var player = (function(spec) {
+player = (function(spec) {
     var self = new Image();
     self.src = "angel.png";
     self.isJumping = false;
@@ -162,7 +208,7 @@ player.checkEndGame = function() {
     }
 };
 
-var clouds = (function(spec) {
+clouds = (function(spec) {
     var self = [];
     self.count = 10;
     for (var j = 0; j < self.count; j++) {
@@ -198,16 +244,8 @@ var clouds = (function(spec) {
     return self;
 })(board);
 
-var quit = (function(u) {
-    createjs.Ticker.setFPS(60);
-    createjs.Ticker.useRAF = true;
-    createjs.Ticker.addEventListener("tick", u);
-    return function() {
-        createjs.Ticker.removeEventListener("tick", u);
-    };
-})(function() { gameLoop(); });
 
-var platforms = (function(spec) {
+platforms = (function(spec) {
     var self = [];
     var position = 0;
 
@@ -289,17 +327,7 @@ var platforms = (function(spec) {
     return self;
 })(board);
 
-var endGame = function() {
-    var ctx = board.context();
-    quit();
-    board.draw();
-    ctx.fillStyle = "Black";
-    ctx.font = "10pt Arial";
-    ctx.fillText("GAME OVER", board.width / 2 - 60, board.height / 2 - 50);
-    ctx.fillText("YOUR RESULT:" + points.value, board.width / 2 - 60, board.height / 2 - 30);
-};
-
-var checkCollisions = function(hero, platforms) {
+checkCollisions = function(hero, platforms) {
     for (var i = 0; i < platforms.count; i++) {
         if (hero.isFalling &&
             hero.X < platforms[i].x + platforms[i].width &&
@@ -311,7 +339,7 @@ var checkCollisions = function(hero, platforms) {
     }
 };
 
-var updatePieces = function(hero, clouds, platforms) {
+updatePieces = function(hero, clouds, platforms) {
     var speed;
 
     checkCollisions(hero, platforms);
@@ -321,22 +349,46 @@ var updatePieces = function(hero, clouds, platforms) {
     points.update(hero.jumpSpeed);
 };
 
-var updateView = function() {
-    var l = arguments.length;
-    for (var i = 0; i < l; i++) {
+updateView = function() {
+    var i, l = arguments.length;
+    for (i = 0; i < l; i++) {
         arguments[i].draw();
     }
 };
 
-var gameLoop = function() {
+gameLoop = function () {
     updatePieces(player, clouds, platforms, points);
     updateView(board, clouds, player, platforms, points);
 };
 
-document.onmousemove = function(e) {
-    if (player.X + canvas.offsetLeft > e.pageX) {
-        player.moveLeft(board);
-    } else if (player.X + canvas.offsetLeft < e.pageX) {
-        player.moveRight(board);
-    }
+(function (u) {
+    createjs.Ticker.setFPS(60);
+    createjs.Ticker.useRAF = true;
+
+    var resume = function () {
+        createjs.Ticker.addEventListener("tick", u);
+        toggleGameLoop = halt;
+    };
+
+    var halt = function () {
+        createjs.Ticker.removeEventListener("tick", u);
+        toggleGameLoop = resume;
+    };
+
+    resume();
+})(function () { gameLoop(); });
+
+controls = createMouseControls(player);
+controls.left = function () { player.moveLeft(board); };
+controls.right = function () { player.moveRight(board); };
+controls.togglePlay = function () { toggleGameLoop(); };
+
+endGame = function () {
+    var ctx = board.context();
+    toggleGameLoop();
+    board.draw();
+    ctx.fillStyle = "Black";
+    ctx.font = "10pt Arial";
+    ctx.fillText("GAME OVER", board.width / 2 - 60, board.height / 2 - 50);
+    ctx.fillText("YOUR RESULT:" + points.value, board.width / 2 - 60, board.height / 2 - 30);
 };
