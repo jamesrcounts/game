@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="angel.png" />
+    <Content Include="controls.js" />
     <Content Include="css\bootstrap-responsive.css" />
     <Content Include="css\bootstrap-responsive.min.css" />
     <Content Include="css\bootstrap.css" />
