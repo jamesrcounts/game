@@ -1,8 +1,17 @@
 ﻿<html>
-<head>
-    <title>Simple game with HTML5 Canvas</title>
-    <script src="lib/easeljs-0.6.0/easeljs-0.6.0.min.js"> </script>
-    <style>
+    <head>
+        <title>Simple game with HTML5 Canvas</title>
+        <script src="lib/easeljs-0.6.0/easeljs-0.6.0.min.js"> </script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="css/bootstrap.css" rel="stylesheet">
+        <link href="css/bootstrap-responsive.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="lib/Tangle-0.1.0/TangleKit/TangleKit.css" />
+        <link rel="stylesheet" type="text/css" href="css/controls.css" />
+        <script src="lib/Tangle-0.1.0/Tangle.js"> </script>
+        <script src="lib/Tangle-0.1.0/TangleKit/TangleKit.js"> </script>
+        <script src="lib/Tangle-0.1.0/TangleKit/mootools.js"> </script>
+        <script src="lib/Tangle-0.1.0/TangleKit/BVTouchable.js"> </script>
+        <!--    <style>
         body {
             margin: 0;
             padding: 0;
@@ -15,12 +24,38 @@
             margin-right: auto;
             outline: 0;
         }
-    </style>
-</head>
-<body>
-    <div>
-        <canvas id='c'></canvas>
+    </style>-->
+    </head>
+    <body>
+        <div class="span12">
+            <canvas id='c'></canvas>
+        </div>
+        <div class="span5 well">
+            <div class="row-fluid">
+                I want to use the <span data-var="controlType" class="TKToggle TKSwitch">
+                                      <span>keyboard</span>
+                                      <span>mouse</span>
+                                  </span>.
+            </div>
+            <div data-var="controlInstructions" class="row-fluid TKSwitch">
+
+                <div>
+                    To use the keyboard:
+                    <ul>
+                        <li>-> moves the angel to the right.</li>
+                        <li>&lt;- moves the angel to the left.</li>
+                        <li>'p' pauses or restarts the game.</li>
+                    </ul>
+                </div>
+                <div>
+                    To use the mouse:
+                    <ul>
+                        <li>The angel will follow the mouse pointer.</li>
+                        <li>Use the right button to pause or restart the game.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
         <script src="game.js"> </script>
-    </div>
-</body>
+    </body>
 </html>

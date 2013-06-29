@@ -1,4 +1,5 @@
-﻿var board, canvas, checkCollisions, clouds, control, controls, endGame, gameLoop, toggleGameLoop, platforms, player, points, updatePieces, updateView;
+﻿var board, canvas, checkCollisions, clouds, control, controls, endGame, gameLoop
+    ,toggleControls ,toggleGameLoop, platforms, player, points, updatePieces, updateView;
 
 controls = {
     left: function () {
@@ -6,6 +7,8 @@ controls = {
     right: function () {
     },
     togglePlay: function () {
+    },
+    teardown: function() {
     }
 };
 
@@ -34,6 +37,11 @@ function createMouseControls(ref) {
         }
     };
 
+    self.teardown = function() {
+        document.onmousemove = null;
+        document.onmousedown = null;
+    };
+
     return self;
 }
 
@@ -42,7 +50,8 @@ function createKeyboardControls() {
     var leftArrow = 37;
     var rightArrow = 39;
     var letterp = 80;
-    document.addEventListener('keydown', function (event) {
+
+    var listener = function (event) {
         var key = event.keyCode;
 
         if (key === leftArrow) {
@@ -52,7 +61,13 @@ function createKeyboardControls() {
         } else if (key === letterp) {
             self.togglePlay();
         }
-    });
+    };
+    
+    document.addEventListener('keydown', listener);
+
+    self.teardown = function() {
+        document.removeEventListener('keydown', listener);
+    };
 
     return self;
 }
@@ -388,10 +403,41 @@ gameLoop = function () {
     resume();
 })(function () { gameLoop(); });
 
-control = createKeyboardControls(player);
-control.left = function () { player.moveLeft(board); };
-control.right = function () { player.moveRight(board); };
-control.togglePlay = function () { toggleGameLoop(); };
+toggleControls = (function () {
+    var createWith, currentControls = false, toggle, toMouse, toKeyboard;
+
+    control = Object.create(controls);
+
+    createWith = function (ctor) {
+        control.teardown();
+
+        control = ctor(player);
+        control.left = function() { player.moveLeft(board); };
+        control.right = function() { player.moveRight(board); };
+        control.togglePlay = function() { toggleGameLoop(); };
+    };
+
+    toMouse = function () {
+        createWith(createMouseControls);
+        toggle = toKeyboard;
+     };
+
+    toKeyboard = function() {
+        createWith(createKeyboardControls);
+        toggle = toMouse;
+    };
+
+    toKeyboard();
+    
+    return function(controlType) {
+        if (currentControls !== controlType) {
+            toggle();
+        }
+    };
+
+})();
+
+
 
 endGame = function () {
     var ctx = board.context();
@@ -402,3 +448,12 @@ endGame = function () {
     ctx.fillText("GAME OVER", board.width / 2 - 60, board.height / 2 - 50);
     ctx.fillText("YOUR RESULT:" + points.value, board.width / 2 - 60, board.height / 2 - 30);
 };
+var tangle = new Tangle(document, {
+    initialize: function () {
+        this.controlType = false;
+    },
+    update: function () {
+        this.controlInstructions = this.controlType;
+        toggleControls(this.controlType);
+    }
+});
