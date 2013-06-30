@@ -71,6 +71,8 @@
     <Content Include="lib\bootstrap\bootstrap.js" />
     <Content Include="lib\bootstrap\bootstrap.min.js" />
     <Content Include="lib\easeljs-0.6.0\easeljs-0.6.0.min.js" />
+    <Content Include="lib\jquery-1.10.1\jquery-1.10.1.js" />
+    <Content Include="lib\jquery-1.10.1\jquery-1.10.1.min.js" />
     <Content Include="lib\Tangle-0.1.0\Tangle.js" />
     <Content Include="lib\Tangle-0.1.0\TangleKit\BVTouchable.js" />
     <Content Include="lib\Tangle-0.1.0\TangleKit\mootools.js" />
@@ -84,6 +86,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="lib\jquery-1.10.1\jquery-1.10.1.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

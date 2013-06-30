@@ -11,48 +11,57 @@
     <script src="lib/Tangle-0.1.0/TangleKit/TangleKit.js"> </script>
     <script src="lib/Tangle-0.1.0/TangleKit/mootools.js"> </script>
     <script src="lib/Tangle-0.1.0/TangleKit/BVTouchable.js"> </script>
+    <script src="lib/jquery-1.10.1/jquery-1.10.1.min.js"></script>
+    <script src="lib/bootstrap/bootstrap.js"></script>
     <script src="controls.js"></script>
-
 </head>
 <body>
     <div class="span12 row-fluid">
         <canvas id='c'></canvas>
     </div>
     <div class="row-fluid">
-        <div class="span4" style="margin-left: 20px;">
-            <ul class="nav nav-tabs nav-stacked">
-                <li><a href="#">Controls</a></li>
+        <div class="span4" style="padding: 1%">
+            <ul id="tab" class="nav nav-tabs">
+                <li class="active">
+                    <a href="#controls" data-toggle="tab">Controls</a>
+                </li>
+                <li>
+                    <a href="#board" data-toggle="board">Board</a>
+                </li>
             </ul>
-        </div>
-    <div id="controlPicker" class="span4 well">
-        <div class="row-fluid">
-            I want to use the <span data-var="controlType" class="TKToggle TKSwitch">
-                <span>keyboard</span>
-                <span>mouse</span>
-            </span>.
-        </div>
-        <div data-var="controlInstructions" class="row-fluid TKSwitch">
+            <div id="tabContent" class="tab-content">
+                <div class="tab-pane fade in active" id="controls">
+                    <p class="row-fluid">
+                        I want to use the <span data-var="controlType" class="TKToggle TKSwitch">
+                            <span>keyboard</span>
+                            <span>mouse</span>
+                        </span>.
+                    </p>
+                    <div data-var="controlInstructions" class="row-fluid TKSwitch">
+                        <div>
+                        <p>    To use the keyboard:
+                            </p>
+                        <ul>
+                            <li>-> moves the angel to the right.</li>
+                            <li>&lt;- moves the angel to the left.</li>
+                            <li>'p' pauses or restarts the game.</li>
+                        </ul>
+                        </div>
+                        <div>
+                            To use the mouse:
 
-            <div>
-                To use the keyboard:
-
-                    <ul>
-                        <li>-> moves the angel to the right.</li>
-                        <li>&lt;- moves the angel to the left.</li>
-                        <li>'p' pauses or restarts the game.</li>
-                    </ul>
+                        <ul>
+                            <li>The angel will follow the mouse pointer.</li>
+                            <li>Use the right button to pause or restart the game.</li>
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="board">
+                    Board Options
+                </div>
             </div>
-            <div>
-                To use the mouse:
-
-                    <ul>
-                        <li>The angel will follow the mouse pointer.</li>
-                        <li>Use the right button to pause or restart the game.</li>
-                    </ul>
-            </div>
         </div>
-    </div>
-
     </div>
     <script src="game.js"> </script>
 </body>

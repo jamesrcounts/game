@@ -1,9 +1,9 @@
 ﻿var board, canvas, checkCollisions, clouds, control, endGame, gameLoop, toggleGameLoop, platforms, player, points, updatePieces, updateView;
 
-board = (function () {
+board = (function() {
     var self = { width: 320, height: 500, color: '#d0e7f9' }, ctx;
 
-    self.draw = function () {
+    self.draw = function() {
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.rect(0, 0, this.width, this.height);
@@ -11,7 +11,7 @@ board = (function () {
         ctx.fill();
     };
 
-    self.setupCanvas = function (id) {
+    self.setupCanvas = function(id) {
         var c;
 
         c = document.getElementById(id);
@@ -22,7 +22,7 @@ board = (function () {
         return c;
     };
 
-    self.context = function () {
+    self.context = function() {
         return ctx;
     };
 
@@ -31,15 +31,15 @@ board = (function () {
 
 canvas = board.setupCanvas('c');
 
-points = (function (spec) {
+points = (function(spec) {
     var self = { value: 0 };
-    self.update = function (deltaY) {
+    self.update = function(deltaY) {
         if (10 < deltaY) {
             this.value++;
         }
     };
 
-    self.draw = function () {
+    self.draw = function() {
         var ctx = spec.context();
         ctx.fillStyle = "Black";
         ctx.fillText("POINTS:" + this.value, 10, spec.height - 10);
@@ -48,7 +48,7 @@ points = (function (spec) {
     return self;
 })(board);
 
-player = (function (spec) {
+player = (function(spec) {
     var self = new Image();
     self.src = "angel.png";
     self.isJumping = false;
@@ -63,22 +63,22 @@ player = (function (spec) {
     self.actualFrame = 0;
     self.interval = 0;
 
-    self.moveTo = function (x, y) {
+    self.moveTo = function(x, y) {
         self.X = x;
         self.Y = y;
     };
-    self.moveLeft = function () {
+    self.moveLeft = function() {
         if (self.X > 0) {
             self.moveTo(self.X - 5, self.Y);
         }
     };
-    self.moveRight = function () {
+    self.moveRight = function() {
         if (self.X + self.width < spec.width) {
             self.moveTo(self.X + 5, self.Y);
         }
     };
 
-    self.update = function () {
+    self.update = function() {
         var remainder = 0;
         if (this.isJumping) {
             if (this.Y > spec.height * 0.4) {
@@ -108,7 +108,7 @@ player = (function (spec) {
         return remainder;
     };
 
-    self.draw = function () {
+    self.draw = function() {
         try {
             spec.context().drawImage(
                 self,
@@ -120,7 +120,7 @@ player = (function (spec) {
                 self.Y,
                 self.width,
                 self.height);
-        } catch (e) {
+        } catch(e) {
         }
 
         if (self.interval == 4) {
@@ -133,7 +133,7 @@ player = (function (spec) {
         }
         self.interval++;
     };
-    self.jump = function () {
+    self.jump = function() {
         if (!self.isJumping && !self.isFalling) {
             self.fallSpeed = 0;
             self.isJumping = true;
@@ -141,10 +141,10 @@ player = (function (spec) {
         }
     };
 
-    self.checkEndGame = function () {
+    self.checkEndGame = function() {
     };
 
-    self.fallStop = function () {
+    self.fallStop = function() {
         self.isFalling = false;
         self.fallSpeed = 0;
         self.jump();
@@ -156,13 +156,13 @@ player = (function (spec) {
     return self;
 })(board);
 
-player.checkEndGame = function () {
+player.checkEndGame = function() {
     if (points != 0) {
         endGame();
     }
 };
 
-clouds = (function (spec) {
+clouds = (function(spec) {
     var self = [];
     self.count = 10;
     for (var j = 0; j < self.count; j++) {
@@ -172,7 +172,7 @@ clouds = (function (spec) {
             Math.random() / 2]);
     }
 
-    self.draw = function () {
+    self.draw = function() {
         var ctx = spec.context();
         for (var i = 0; i < this.count; i++) {
             ctx.fillStyle = 'rgba(255, 255, 255, ' + this[i][3] + ')';
@@ -183,7 +183,7 @@ clouds = (function (spec) {
         }
     };
 
-    self.update = function (deltaY) {
+    self.update = function(deltaY) {
         for (var i = 0; i < this.count; i++) {
             if (this[i][1] - this[i][2] <= spec.height) {
                 this[i][1] += deltaY;
@@ -198,11 +198,11 @@ clouds = (function (spec) {
     return self;
 })(board);
 
-platforms = (function (spec) {
+platforms = (function(spec) {
     var self = [];
     var position = 0;
 
-    var createPlatform = function (x, y, type) {
+    var createPlatform = function(x, y, type) {
         var platform = { width: 70, height: 20 };
         platform.isMoving = ~~(Math.random() * 2);
         platform.direction = ~~(Math.random() * 2) ? -1 : 1;
@@ -212,7 +212,7 @@ platforms = (function (spec) {
         platform.firstColor = type === 1 ? '#AADD00' : '#FF8C00';
         platform.secondColor = type === 1 ? '#698B22' : '#EEEE00';
 
-        platform.onCollide = function () {
+        platform.onCollide = function() {
             player.fallStop();
             if (type === 1) {
                 player.jumpSpeed = 50;
@@ -234,7 +234,7 @@ platforms = (function (spec) {
         }
     }
 
-    self.draw = function () {
+    self.draw = function() {
         var ctx = spec.context();
         for (var i = 0; i < this.count; i++) {
             ctx.fillStyle = 'rgba(255, 255, 255, 1)';
@@ -256,7 +256,7 @@ platforms = (function (spec) {
         }
     };
 
-    self.update = function (deltaY) {
+    self.update = function(deltaY) {
         for (var i = 0; i < this.count; i++) {
             if (this[i].isMoving) {
                 if (this[i].x < 0) {
@@ -280,7 +280,7 @@ platforms = (function (spec) {
     return self;
 })(board);
 
-checkCollisions = function (hero, platforms) {
+checkCollisions = function(hero, platforms) {
     for (var i = 0; i < platforms.count; i++) {
         if (hero.isFalling &&
             hero.X < platforms[i].x + platforms[i].width &&
@@ -292,7 +292,7 @@ checkCollisions = function (hero, platforms) {
     }
 };
 
-updatePieces = function (hero, clouds, platforms) {
+updatePieces = function(hero, clouds, platforms) {
     var speed;
 
     checkCollisions(hero, platforms);
@@ -302,40 +302,40 @@ updatePieces = function (hero, clouds, platforms) {
     points.update(hero.jumpSpeed);
 };
 
-updateView = function () {
+updateView = function() {
     var i, l = arguments.length;
     for (i = 0; i < l; i++) {
         arguments[i].draw();
     }
 };
 
-gameLoop = function () {
+gameLoop = function() {
     updatePieces(player, clouds, platforms, points);
     updateView(board, clouds, player, platforms, points);
 };
 
-(function (u) {
+(function(u) {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.useRAF = true;
 
-    var resume = function () {
+    var resume = function() {
         createjs.Ticker.addEventListener("tick", u);
         toggleGameLoop = halt;
     };
 
-    var halt = function () {
+    var halt = function() {
         createjs.Ticker.removeEventListener("tick", u);
         toggleGameLoop = resume;
     };
 
     resume();
-})(function () { gameLoop(); });
+})(function() { gameLoop(); });
 
-endGame = function () {
+endGame = function() {
     var ctx = board.context();
-    updatePieces = function () {
+    updatePieces = function() {
     };
-    updateView = function () {
+    updateView = function() {
         board.draw();
         ctx.fillStyle = "Black";
         ctx.font = "10pt Arial";
@@ -346,12 +346,17 @@ endGame = function () {
     toggleGameLoop();
 };
 
-var ct = new Tangle(document.getElementById("controlPicker"), {
-    initialize: function () {
+var ct = new Tangle(document.getElementById("controls"), {
+    initialize: function() {
         this.controlType = false;
     },
-    update: function () {
+    update: function() {
         this.controlInstructions = this.controlType;
         cs.toggleControls(this.controlType, player);
     }
+});
+
+$('#tab a').click(function(e) {
+    e.preventDefault();
+    $(this).tab('show');
 });
