@@ -45,6 +45,10 @@ points = (function(spec) {
         ctx.fillText("POINTS:" + this.value, 10, spec.height - 10);
     };
 
+    self.reset = function() {
+        this.value = 0;
+    };
+
     return self;
 })(board);
 
@@ -170,12 +174,15 @@ player.checkEndGame = function() {
 clouds = (function(spec) {
     var self = [];
     self.count = 10;
-    for (var j = 0; j < self.count; j++) {
-        self.push([Math.random() * spec.width,
-            Math.random() * spec.height,
-            Math.random() * 100,
-            Math.random() / 2]);
-    }
+
+    self.reset = function() {
+        for (var j = 0; j < self.count; j++) {
+            self[j] = [Math.random() * spec.width,
+                Math.random() * spec.height,
+                Math.random() * 100,
+                Math.random() / 2];
+        }
+    };
 
     self.draw = function() {
         var ctx = spec.context();
@@ -200,6 +207,8 @@ clouds = (function(spec) {
             }
         }
     };
+
+    self.reset();
     return self;
 })(board);
 
@@ -227,17 +236,21 @@ platforms = (function(spec) {
     };
 
     self.count = 7;
-    for (var j = 0; j < self.count; j++) {
-        self[j] = createPlatform(
-            0,
-            position,
-            ~~(Math.random() * 5) == 0 ? 1 : 0);
-        self[j].x = Math.random() * (spec.width - self[j].width);
 
-        if (position < spec.height - self[j].height) {
-            position += ~~(spec.height / self.count);
+    self.reset = function() {
+        position = 0;
+        for (var j = 0; j < self.count; j++) {
+            self[j] = createPlatform(
+                0,
+                position,
+                ~~(Math.random() * 5) == 0 ? 1 : 0);
+            self[j].x = Math.random() * (spec.width - self[j].width);
+
+            if (position < spec.height - self[j].height) {
+                position += ~~(spec.height / self.count);
+            }
         }
-    }
+    };
 
     self.draw = function() {
         var ctx = spec.context();
@@ -282,6 +295,8 @@ platforms = (function(spec) {
             }
         }
     };
+
+    self.reset();
     return self;
 })(board);
 
@@ -296,8 +311,7 @@ checkCollisions = function(hero, platforms) {
         }
     }
 };
-
-updatePieces = function(hero, clouds, platforms) {
+var updateEachPiece = function(hero, clouds, platforms) {
     var speed;
 
     checkCollisions(hero, platforms);
@@ -306,6 +320,7 @@ updatePieces = function(hero, clouds, platforms) {
     platforms.update(speed);
     points.update(hero.jumpSpeed);
 };
+updatePieces = updateEachPiece;
 var drawAllPieces = function() {
     var i, l = arguments.length;
     for (i = 0; i < l; i++) {
@@ -369,7 +384,8 @@ function resetAll() {
 }
 
 function reset() {
-    resetAll(player);
+    resetAll(player, points, clouds, platforms);
+    updatePieces = updateEachPiece;
     updateView = drawAllPieces;
     toggleGameLoop();
 }
@@ -382,4 +398,4 @@ $('#tab a').click(function(e) {
 $('#reset').click(function(e) {
     e.preventDefault();
     reset();
-})
+});
