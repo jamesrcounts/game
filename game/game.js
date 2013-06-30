@@ -149,10 +149,15 @@ player = (function(spec) {
         self.fallSpeed = 0;
         self.jump();
     };
-    self.moveTo(
-        ~~((spec.width - self.width) / 2),
-        ~~((spec.height - self.height) / 2));
-    self.jump();
+
+    self.reset = function() {
+        self.moveTo(
+            ~~((spec.width - self.width) / 2),
+            ~~((spec.height - self.height) / 2));
+        self.jump();
+    };
+
+    self.reset();
     return self;
 })(board);
 
@@ -301,13 +306,13 @@ updatePieces = function(hero, clouds, platforms) {
     platforms.update(speed);
     points.update(hero.jumpSpeed);
 };
-
-updateView = function() {
+var drawAllPieces = function() {
     var i, l = arguments.length;
     for (i = 0; i < l; i++) {
         arguments[i].draw();
     }
 };
+updateView = drawAllPieces;
 
 gameLoop = function() {
     updatePieces(player, clouds, platforms, points);
@@ -356,7 +361,25 @@ var ct = new Tangle(document.getElementById("controls"), {
     }
 });
 
+function resetAll() {
+    var i, l = arguments.length;
+    for (i = 0; i < l; i++) {
+        arguments[i].reset();
+    }
+}
+
+function reset() {
+    resetAll(player);
+    updateView = drawAllPieces;
+    toggleGameLoop();
+}
+
 $('#tab a').click(function(e) {
     e.preventDefault();
     $(this).tab('show');
 });
+
+$('#reset').click(function(e) {
+    e.preventDefault();
+    reset();
+})
