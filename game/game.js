@@ -1,4 +1,17 @@
-﻿var board, canvas, checkCollisions, clouds, control, endGame, gameLoop, toggleGameLoop, platforms, player, points, updatePieces, updateView;
+﻿var startGame;
+var board;
+var canvas;
+var checkCollisions;
+var clouds;
+var control;
+var endGame;
+var gameLoop;
+var toggleGameLoop;
+var platforms;
+var player;
+var points;
+var updatePieces;
+var updateView;
 
 board = (function() {
     var self = { width: 320, height: 500, color: '#d0e7f9' }, ctx;
@@ -338,8 +351,13 @@ gameLoop = function() {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.useRAF = true;
 
-    var resume = function() {
+    startGame = function() {
+
         createjs.Ticker.addEventListener("tick", u);
+    };
+
+    var resume = function() {
+        startGame();
         toggleGameLoop = halt;
     };
 
@@ -387,7 +405,7 @@ function reset() {
     resetAll(player, points, clouds, platforms);
     updatePieces = updateEachPiece;
     updateView = drawAllPieces;
-    toggleGameLoop();
+    startGame();
 }
 
 $('#tab a').click(function(e) {
