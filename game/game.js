@@ -1,6 +1,4 @@
 ﻿var startGame;
-var board;
-var canvas;
 var checkCollisions;
 var clouds;
 var control;
@@ -12,37 +10,6 @@ var player;
 var points;
 var updatePieces;
 var updateView;
-
-board = (function() {
-    var self = { width: 320, height: 500, color: '#d0e7f9' }, ctx;
-
-    self.draw = function() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.rect(0, 0, this.width, this.height);
-        ctx.closePath();
-        ctx.fill();
-    };
-
-    self.setupCanvas = function(id) {
-        var c;
-
-        c = document.getElementById(id);
-        c.width = this.width;
-        c.height = this.height;
-        ctx = c.getContext('2d');
-
-        return c;
-    };
-
-    self.context = function() {
-        return ctx;
-    };
-
-    return self;
-})();
-
-canvas = board.setupCanvas('c');
 
 points = (function(spec) {
     var self = { value: 0 };
@@ -352,7 +319,6 @@ gameLoop = function() {
     createjs.Ticker.useRAF = true;
 
     startGame = function() {
-
         createjs.Ticker.addEventListener("tick", u);
     };
 
@@ -390,7 +356,16 @@ var ct = new Tangle(document.getElementById("controls"), {
     },
     update: function() {
         this.controlInstructions = this.controlType;
-        cs.toggleControls(this.controlType, player);
+        cs.toggleControls(this.controlType, player, board.canvas());
+    }
+});
+
+var bt = new Tangle($('#board')[0], {
+    initialize: function() {
+        this.boardSize = "small";
+    },
+    update: function () {
+        board.size(this.boardSize);
     }
 });
 

@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="angel.png" />
+    <Content Include="board.js" />
     <Content Include="controls.js" />
     <Content Include="css\bootstrap-responsive.css" />
     <Content Include="css\bootstrap-responsive.min.css" />
@@ -80,13 +81,14 @@
     <Content Include="lib\Tangle-0.1.0\TangleKit\TangleKit.css" />
     <Content Include="lib\Tangle-0.1.0\TangleKit\TangleKit.js" />
     <Content Include="lib\Tangle-0.1.0\TangleTemplate.html" />
+    <Content Include="tangle-extensions.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="lib\jquery-1.10.1\jquery-1.10.1.min.map" />
+    <Content Include="lib\jquery-1.10.1\jquery-1.10.1.min.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
