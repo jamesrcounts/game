@@ -16,7 +16,7 @@
         <script src="tangle-extensions.js"> </script>
     </head>
     <body>
-        <div class="span12 row-fluid">
+        <div class="span12 row-fluid" style="margin-left:0">
             <canvas id='c'></canvas>
         </div>
         <div class="row-fluid ">
@@ -29,7 +29,10 @@
                         <a href="#controls" data-toggle="tab">Controls</a>
                     </li>
                     <li>
-                        <a href="#board" data-toggle="board">Board</a>
+                        <a href="#board" data-toggle="tab">Board</a>
+                    </li>
+                    <li>
+                        <a href="#platforms" data-toggle="tab">Platforms</a>
                     </li>
                 </ul>
                 <div id="tabContent" class="tab-content">
@@ -67,6 +70,11 @@
                             The board is
                             <span data-var="boardSize" data-values="small medium huge" class="DragText"></span>
                             .
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="platforms">
+                        <div class="row-fluid" style="padding-top: 2%">
+                            The platforms are made of wood rubber flubber.
                         </div>
                     </div>
                 </div>

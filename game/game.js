@@ -383,10 +383,10 @@ function reset() {
     startGame();
 }
 
-$('#tab a').click(function(e) {
-    e.preventDefault();
-    $(this).tab('show');
-});
+//$('#tab a').click(function(e) {
+//    e.preventDefault();
+//    $(this).tab('show');
+//});
 
 $('#reset').click(function(e) {
     e.preventDefault();
