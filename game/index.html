@@ -33,7 +33,9 @@
                 </li>
                 <li>
                     <a href="#player" data-toggle="tab">Player</a>
-                </li>
+                </li><li>
+                         <a href="#platforms" data-toggle="tab">Platforms</a>
+                     </li>
             </ul>
             <div id="tabContent" class="tab-content">
                 <div class="tab-pane fade in active" id="controls">
@@ -76,6 +78,11 @@
                         The angel flies <span data-var="playerAgility" data-values="slowly normally quickly" class="DragText"></span>.
                     </div>
                 </div>
+                <div class="tab-pane fade" id="platforms">
+                    <div class="row-fluid" style="padding-top: 2%">
+                        The platforms are made of <span data-var="platformsBounce" data-values="wood rubber flubber" class="DragText"></span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -83,6 +90,8 @@
     <script src="controls.js"> </script>
     <script src="points.js"> </script>
     <script src="player.js"></script>
+    <script src="clouds.js"></script>
+    <script src="platforms.js"></script>
     <script src="game.js"> </script>
 </body>
 </html>
