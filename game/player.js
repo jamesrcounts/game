@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-var player = (function (spec) {
+var player = (function(spec) {
     var self = new Image();
     var defaultSpeed = 5;
     var speed = defaultSpeed;
@@ -20,35 +20,35 @@ var player = (function (spec) {
     self.agility = function(agility) {
         var factor;
         switch (true) {
-            case /slowly/i.test(agility):
-                factor = 1/3;
-                break;
-            case /quickly/i.test(agility):
-                factor = 3;
-                break;
-            default:
-                factor = 1;
+        case /slowly/i.test(agility):
+            factor = 1 / 3;
+            break;
+        case /quickly/i.test(agility):
+            factor = 3;
+            break;
+        default:
+            factor = 1;
         }
 
         speed = defaultSpeed * factor;
     };
 
-    self.moveTo = function (x, y) {
+    self.moveTo = function(x, y) {
         self.X = x;
         self.Y = y;
     };
-    self.moveLeft = function () {
+    self.moveLeft = function() {
         if (self.X > 0) {
             self.moveTo(self.X - speed, self.Y);
         }
     };
-    self.moveRight = function () {
+    self.moveRight = function() {
         if (self.X + self.width < spec.width) {
             self.moveTo(self.X + speed, self.Y);
         }
     };
 
-    self.update = function () {
+    self.update = function() {
         var remainder = 0;
         if (this.isJumping) {
             if (this.Y > spec.height * 0.4) {
@@ -78,7 +78,7 @@ var player = (function (spec) {
         return remainder;
     };
 
-    self.draw = function () {
+    self.draw = function() {
         try {
             spec.context().drawImage(
                 self,
@@ -90,7 +90,7 @@ var player = (function (spec) {
                 self.Y,
                 self.width,
                 self.height);
-        } catch (e) {
+        } catch(e) {
         }
 
         if (self.interval == 4) {
@@ -103,31 +103,29 @@ var player = (function (spec) {
         }
         self.interval++;
     };
-    self.jump = function () {
+    
+    self.jump = function(deltaY) {
         if (!self.isJumping && !self.isFalling) {
-            self.fallSpeed = 0;
             self.isJumping = true;
-            self.jumpSpeed = 17;
+            self.jumpSpeed = deltaY;
         }
     };
 
-    self.checkEndGame = function () {
+    self.checkEndGame = function() {
     };
 
-    self.fallStop = function () {
+    self.fallStop = function() {
         self.isFalling = false;
         self.fallSpeed = 0;
-        self.jump();
     };
 
-    self.reset = function () {
+    self.reset = function() {
         self.moveTo(
             ~~((spec.width - self.width) / 2),
             ~~((spec.height - self.height) / 2));
-        self.jump();
+        self.jump(17);
     };
 
     self.reset();
     return self;
 })(board);
-

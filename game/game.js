@@ -12,26 +12,25 @@ var ct;
 var bt;
 var pt;
 
-player.checkEndGame = function() {
+player.checkEndGame = function () {
     if (points != 0) {
         endGame();
     }
 };
 
-
-
-checkCollisions = function(hero, platforms) {
+checkCollisions = function (hero, platforms) {
     for (var i = 0; i < platforms.count; i++) {
         if (hero.isFalling &&
             hero.X < platforms[i].x + platforms[i].width &&
             hero.X + hero.width > platforms[i].x &&
             hero.Y + hero.height > platforms[i].y &&
             hero.Y + hero.height < platforms[i].y + platforms[i].height) {
-            platforms[i].onCollide();
+            platforms[i].onCollide(hero);
         }
     }
 };
-updateEachPiece = function(hero, clouds, platforms) {
+
+updateEachPiece = function (hero, clouds, platforms) {
     var speed;
 
     checkCollisions(hero, platforms);
@@ -40,8 +39,10 @@ updateEachPiece = function(hero, clouds, platforms) {
     platforms.update(speed);
     points.update(hero.jumpSpeed);
 };
+
 updatePieces = updateEachPiece;
-drawAllPieces = function() {
+
+drawAllPieces = function () {
     var i, l = arguments.length;
     for (i = 0; i < l; i++) {
         arguments[i].draw();
@@ -49,37 +50,37 @@ drawAllPieces = function() {
 };
 updateView = drawAllPieces;
 
-gameLoop = function() {
+gameLoop = function () {
     updatePieces(player, clouds, platforms, points);
     updateView(board, clouds, player, platforms, points);
 };
 
-(function(u) {
+(function (u) {
     createjs.Ticker.setFPS(60);
     createjs.Ticker.useRAF = true;
 
-    startGame = function() {
+    startGame = function () {
         createjs.Ticker.addEventListener("tick", u);
     };
 
-    var resume = function() {
+    var resume = function () {
         startGame();
         toggleGameLoop = halt;
     };
 
-    var halt = function() {
+    var halt = function () {
         createjs.Ticker.removeEventListener("tick", u);
         toggleGameLoop = resume;
     };
 
     resume();
-})(function() { gameLoop(); });
+})(function () { gameLoop(); });
 
-endGame = function() {
+endGame = function () {
     var ctx = board.context();
-    updatePieces = function() {
+    updatePieces = function () {
     };
-    updateView = function() {
+    updateView = function () {
         board.draw();
         ctx.fillStyle = "Black";
         ctx.font = "10pt Arial";
@@ -91,29 +92,29 @@ endGame = function() {
 };
 
 ct = new Tangle($("#controls")[0], {
-    initialize: function() {
+    initialize: function () {
         this.controlType = false;
     },
-    update: function() {
+    update: function () {
         this.controlInstructions = this.controlType;
         cs.toggleControls(this.controlType, player, board.canvas());
     }
 });
 
 bt = new Tangle($('#board')[0], {
-    initialize: function() {
+    initialize: function () {
         this.boardSize = "small";
     },
-    update: function() {
+    update: function () {
         board.size(this.boardSize);
     }
 });
 
 ct = new Tangle($('#player')[0], {
-    initialize: function() {
+    initialize: function () {
         this.playerAgility = "normally";
     },
-    update: function() {
+    update: function () {
         player.agility(this.playerAgility);
     }
 });
@@ -132,7 +133,7 @@ function reset() {
     startGame();
 }
 
-$('#reset').click(function(e) {
+$('#reset').click(function (e) {
     e.preventDefault();
     reset();
 });

@@ -14,11 +14,9 @@ var platforms = (function (spec) {
         platform.firstColor = type === 1 ? '#AADD00' : '#FF8C00';
         platform.secondColor = type === 1 ? '#698B22' : '#EEEE00';
 
-        platform.onCollide = function () {
-            player.fallStop();
-            if (type === 1) {
-                player.jumpSpeed = 50;
-            }
+        platform.onCollide = function (hero) {
+            hero.fallStop();
+            hero.jump(type === 1 ? 50 : 17);
         };
         return platform;
     };
