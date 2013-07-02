@@ -59,6 +59,7 @@
   <ItemGroup>
     <Content Include="angel.png" />
     <Content Include="board.js" />
+    <Content Include="clouds.js" />
     <Content Include="controls.js" />
     <Content Include="css\bootstrap-responsive.css" />
     <Content Include="css\bootstrap-responsive.min.css" />
