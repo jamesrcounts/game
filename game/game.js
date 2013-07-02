@@ -11,6 +11,7 @@ var drawAllPieces;
 var ct;
 var bt;
 var pt;
+var plt;
 
 player.checkEndGame = function () {
     if (points != 0) {
@@ -116,6 +117,15 @@ ct = new Tangle($('#player')[0], {
     },
     update: function () {
         player.agility(this.playerAgility);
+    }
+});
+
+plt = new Tangle($('#platforms')[0], {
+    initialize: function() {
+        this.platformsBounce = "rubber";
+    },
+    update: function() {
+        platforms.bounce(this.platformsBounce);
     }
 });
 

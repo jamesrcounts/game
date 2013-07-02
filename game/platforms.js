@@ -3,7 +3,9 @@
 var platforms = (function (spec) {
     var self = [];
     var position = 0;
-
+    var defaultBounce = 17;
+    var cor = defaultBounce;
+    
     var createPlatform = function (x, y, type) {
         var platform = { width: 70, height: 20 };
         platform.isMoving = ~~(Math.random() * 2);
@@ -16,12 +18,28 @@ var platforms = (function (spec) {
 
         platform.onCollide = function (hero) {
             hero.fallStop();
-            hero.jump(type === 1 ? 50 : 17);
+            hero.jump(type === 1 ? 3*cor : cor);
         };
         return platform;
     };
 
     self.count = 7;
+
+    self.bounce = function(bounce) {
+        var factor;
+        switch (true) {
+            case /wood/i.test(bounce):
+                factor = 1 / 3;
+                break;
+            case /flubber/i.test(bounce):
+                factor = 3;
+                break;
+            default:
+                factor = 1;
+        }
+        
+        cor = defaultBounce * factor;
+    };
 
     self.reset = function () {
         position = 0;
