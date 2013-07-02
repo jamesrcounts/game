@@ -6,144 +6,13 @@ var endGame;
 var gameLoop;
 var toggleGameLoop;
 var platforms;
-var player;
-var points;
 var updatePieces;
 var updateView;
-
-points = (function(spec) {
-    var self = { value: 0 };
-    self.update = function(deltaY) {
-        if (10 < deltaY) {
-            this.value++;
-        }
-    };
-
-    self.draw = function() {
-        var ctx = spec.context();
-        ctx.fillStyle = "Black";
-        ctx.fillText("POINTS:" + this.value, 10, spec.height - 10);
-    };
-
-    self.reset = function() {
-        this.value = 0;
-    };
-
-    return self;
-})(board);
-
-player = (function(spec) {
-    var self = new Image();
-    self.src = "angel.png";
-    self.isJumping = false;
-    self.isFalling = false;
-    self.jumpSpeed = 0;
-    self.fallSpeed = 0;
-    self.width = 65;
-    self.height = 95;
-    self.X = 0;
-    self.Y = 0;
-    self.frames = 1;
-    self.actualFrame = 0;
-    self.interval = 0;
-
-    self.moveTo = function(x, y) {
-        self.X = x;
-        self.Y = y;
-    };
-    self.moveLeft = function() {
-        if (self.X > 0) {
-            self.moveTo(self.X - 5, self.Y);
-        }
-    };
-    self.moveRight = function() {
-        if (self.X + self.width < spec.width) {
-            self.moveTo(self.X + 5, self.Y);
-        }
-    };
-
-    self.update = function() {
-        var remainder = 0;
-        if (this.isJumping) {
-            if (this.Y > spec.height * 0.4) {
-                this.moveTo(this.X, this.Y - this.jumpSpeed);
-            } else {
-                remainder = this.jumpSpeed;
-            }
-
-            this.jumpSpeed--;
-            if (this.jumpSpeed == 0) {
-                this.isJumping = false;
-                this.isFalling = true;
-                this.fallSpeed = 1;
-            }
-        }
-
-        if (this.isFalling) {
-            if (this.Y < spec.height - this.height) {
-                this.moveTo(this.X, this.Y + this.fallSpeed);
-                this.fallSpeed++;
-            } else {
-                this.checkEndGame();
-                this.fallStop();
-            }
-        }
-
-        return remainder;
-    };
-
-    self.draw = function() {
-        try {
-            spec.context().drawImage(
-                self,
-                0,
-                self.height * self.actualFrame,
-                self.width,
-                self.height,
-                self.X,
-                self.Y,
-                self.width,
-                self.height);
-        } catch(e) {
-        }
-
-        if (self.interval == 4) {
-            if (self.actualFrame == self.frames) {
-                self.actualFrame = 0;
-            } else {
-                self.actualFrame++;
-            }
-            self.interval = 0;
-        }
-        self.interval++;
-    };
-    self.jump = function() {
-        if (!self.isJumping && !self.isFalling) {
-            self.fallSpeed = 0;
-            self.isJumping = true;
-            self.jumpSpeed = 17;
-        }
-    };
-
-    self.checkEndGame = function() {
-    };
-
-    self.fallStop = function() {
-        self.isFalling = false;
-        self.fallSpeed = 0;
-        self.jump();
-    };
-
-    self.reset = function() {
-        self.moveTo(
-            ~~((spec.width - self.width) / 2),
-            ~~((spec.height - self.height) / 2));
-        self.jump();
-    };
-
-    self.reset();
-    return self;
-})(board);
+var updateEachPiece;
+var drawAllPieces;
+var ct;
+var bt;
+var pt;
 
 player.checkEndGame = function() {
     if (points != 0) {
@@ -291,7 +160,7 @@ checkCollisions = function(hero, platforms) {
         }
     }
 };
-var updateEachPiece = function(hero, clouds, platforms) {
+updateEachPiece = function(hero, clouds, platforms) {
     var speed;
 
     checkCollisions(hero, platforms);
@@ -301,7 +170,7 @@ var updateEachPiece = function(hero, clouds, platforms) {
     points.update(hero.jumpSpeed);
 };
 updatePieces = updateEachPiece;
-var drawAllPieces = function() {
+drawAllPieces = function() {
     var i, l = arguments.length;
     for (i = 0; i < l; i++) {
         arguments[i].draw();
@@ -350,7 +219,7 @@ endGame = function() {
     toggleGameLoop();
 };
 
-var ct = new Tangle(document.getElementById("controls"), {
+ct = new Tangle($("#controls")[0], {
     initialize: function() {
         this.controlType = false;
     },
@@ -360,12 +229,21 @@ var ct = new Tangle(document.getElementById("controls"), {
     }
 });
 
-var bt = new Tangle($('#board')[0], {
+bt = new Tangle($('#board')[0], {
     initialize: function() {
         this.boardSize = "small";
     },
-    update: function () {
+    update: function() {
         board.size(this.boardSize);
+    }
+});
+
+ct = new Tangle($('#player')[0], {
+    initialize: function() {
+        this.playerAgility = "normally";
+    },
+    update: function() {
+        player.agility(this.playerAgility);
     }
 });
 
@@ -382,11 +260,6 @@ function reset() {
     updateView = drawAllPieces;
     startGame();
 }
-
-//$('#tab a').click(function(e) {
-//    e.preventDefault();
-//    $(this).tab('show');
-//});
 
 $('#reset').click(function(e) {
     e.preventDefault();
