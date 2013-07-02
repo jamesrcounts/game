@@ -1,61 +1,97 @@
 ﻿<html>
-    <head>
-        <title>Simple game with HTML5 Canvas</title>
-        <script src="lib/easeljs-0.6.0/easeljs-0.6.0.min.js"> </script>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="css/bootstrap.css" rel="stylesheet">
-        <link href="css/bootstrap-responsive.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="lib/Tangle-0.1.0/TangleKit/TangleKit.css" />
-        <link rel="stylesheet" type="text/css" href="css/controls.css" />
-        <script src="lib/Tangle-0.1.0/Tangle.js"> </script>
-        <script src="lib/Tangle-0.1.0/TangleKit/TangleKit.js"> </script>
-        <script src="lib/Tangle-0.1.0/TangleKit/mootools.js"> </script>
-        <script src="lib/Tangle-0.1.0/TangleKit/BVTouchable.js"> </script>
-        <!--    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
+<head>
+    <title>Simple game with HTML5 Canvas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="lib/Tangle-0.1.0/TangleKit/TangleKit.css" rel="stylesheet" />
+    <link href="css/controls.css" rel="stylesheet" />
+    <script src="lib/easeljs-0.6.0/easeljs-0.6.0.min.js"> </script>
+    <script src="lib/Tangle-0.1.0/Tangle.js"> </script>
+    <script src="lib/Tangle-0.1.0/TangleKit/TangleKit.js"> </script>
+    <script src="lib/Tangle-0.1.0/TangleKit/mootools.js"> </script>
+    <script src="lib/Tangle-0.1.0/TangleKit/BVTouchable.js"> </script>
+    <script src="lib/jquery-1.10.1/jquery-1.10.1.min.js"> </script>
+    <script src="lib/bootstrap/bootstrap.js"> </script>
+    <script src="tangle-extensions.js"> </script>
+</head>
+<body>
+    <div class="span12 row-fluid" style="margin-left: 0">
+        <canvas id='c'></canvas>
+    </div>
+    <div class="row-fluid ">
+        <button id="reset" class="btn btn-link">Reset</button>
+    </div>
+    <div class="row-fluid">
+        <div class="span4" style="padding: 1%">
+            <ul id="tab" class="nav nav-tabs">
+                <li class="active">
+                    <a href="#controls" data-toggle="tab">Controls</a>
+                </li>
+                <li>
+                    <a href="#board" data-toggle="tab">Board</a>
+                </li>
+                <li>
+                    <a href="#player" data-toggle="tab">Player</a>
+                </li><li>
+                         <a href="#platforms" data-toggle="tab">Platforms</a>
+                     </li>
+            </ul>
+            <div id="tabContent" class="tab-content">
+                <div class="tab-pane fade in active" id="controls">
+                    <p class="row-fluid">
+                        I want to use the <span data-var="controlType" class="TKToggle TKSwitch">
+                            <span>keyboard</span>
+                            <span>mouse</span>
+                        </span>.
+                    </p>
+                    <div data-var="controlInstructions" class="row-fluid TKSwitch">
+                        <div>
+                            <p>
+                                To use the keyboard:
+                            </p>
+                            <ul>
+                                <li>-> moves the angel to the right.</li>
+                                <li>&lt;- moves the angel to the left.</li>
+                                <li>'p' pauses or restarts the game.</li>
+                            </ul>
+                        </div>
+                        <div>
+                            To use the mouse:
 
-        canvas {
-            border: 1px solid #000;
-            margin-left: auto;
-            margin-right: auto;
-            outline: 0;
-        }
-    </style>-->
-    </head>
-    <body>
-        <div class="span12">
-            <canvas id='c'></canvas>
-        </div>
-        <div class="span5 well">
-            <div class="row-fluid">
-                I want to use the <span data-var="controlType" class="TKToggle TKSwitch">
-                                      <span>keyboard</span>
-                                      <span>mouse</span>
-                                  </span>.
-            </div>
-            <div data-var="controlInstructions" class="row-fluid TKSwitch">
-
-                <div>
-                    To use the keyboard:
-                    <ul>
-                        <li>-> moves the angel to the right.</li>
-                        <li>&lt;- moves the angel to the left.</li>
-                        <li>'p' pauses or restarts the game.</li>
-                    </ul>
+                                <ul>
+                                    <li>The angel will follow the mouse pointer.</li>
+                                    <li>Use the right button to pause or restart the game.</li>
+                                </ul>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    To use the mouse:
-                    <ul>
-                        <li>The angel will follow the mouse pointer.</li>
-                        <li>Use the right button to pause or restart the game.</li>
-                    </ul>
+                <div class="tab-pane fade" id="board">
+                    <div class="row-fluid" style="padding-top: 2%">
+                        The board is
+                            <span data-var="boardSize" data-values="small medium huge" class="DragText"></span>
+                        .
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="player">
+                    <div class="row-fluid" style="padding-top: 2%">
+                        The angel flies <span data-var="playerAgility" data-values="slowly normally quickly" class="DragText"></span>.
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="platforms">
+                    <div class="row-fluid" style="padding-top: 2%">
+                        The platforms are made of <span data-var="platformsBounce" data-values="wood rubber flubber" class="DragText"></span>
+                    </div>
                 </div>
             </div>
         </div>
-        <script src="game.js"> </script>
-    </body>
+    </div>
+    <script src="board.js"> </script>
+    <script src="controls.js"> </script>
+    <script src="points.js"> </script>
+    <script src="player.js"></script>
+    <script src="clouds.js"></script>
+    <script src="platforms.js"></script>
+    <script src="game.js"> </script>
+</body>
 </html>
