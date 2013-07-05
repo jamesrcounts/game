@@ -27,6 +27,7 @@ var board = (function () {
     };
 
     self.draw = function() {
+        cvs.resize();
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.rect(0, 0, this.width, this.height);
@@ -48,7 +49,8 @@ var board = (function () {
         }
 
         this.width = defaultWidth * factor;
-        cvs.resize();
+        _gaq.push(['_trackEvent', 'Board', 'Resize', size]);
+
     };
 
     self.canvas = setupCanvas;
