@@ -103,6 +103,7 @@ function reset() {
 }
 
 $('#reset').click(function (e) {
+    _gaq.push(['_trackEvent', 'Game', 'Reset', 'Game Reset']);
     e.preventDefault();
     reset();
 });
