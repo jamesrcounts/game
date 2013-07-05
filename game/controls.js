@@ -109,3 +109,13 @@ var cs = (function() {
 
     return controlSystem;
 })();
+
+var ct = new Tangle($("#controls")[0], {
+    initialize: function () {
+        this.controlType = false;
+    },
+    update: function () {
+        this.controlInstructions = this.controlType;
+        cs.toggleControls(this.controlType, player, board.canvas());
+    }
+});

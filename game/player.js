@@ -129,3 +129,12 @@ var player = (function(spec) {
     self.reset();
     return self;
 })(board);
+
+var pt = new Tangle($('#player')[0], {
+    initialize: function () {
+        this.playerAgility = "normally";
+    },
+    update: function () {
+        player.agility(this.playerAgility);
+    }
+});

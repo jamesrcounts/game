@@ -8,10 +8,6 @@ var updatePieces;
 var updateView;
 var updateEachPiece;
 var drawAllPieces;
-var ct;
-var bt;
-var pt;
-var plt;
 
 player.checkEndGame = function () {
     if (points.value != 0) {
@@ -91,43 +87,6 @@ endGame = function () {
 
     toggleGameLoop();
 };
-
-ct = new Tangle($("#controls")[0], {
-    initialize: function () {
-        this.controlType = false;
-    },
-    update: function () {
-        this.controlInstructions = this.controlType;
-        cs.toggleControls(this.controlType, player, board.canvas());
-    }
-});
-
-bt = new Tangle($('#board')[0], {
-    initialize: function () {
-        this.boardSize = "small";
-    },
-    update: function () {
-        board.size(this.boardSize);
-    }
-});
-
-ct = new Tangle($('#player')[0], {
-    initialize: function () {
-        this.playerAgility = "normally";
-    },
-    update: function () {
-        player.agility(this.playerAgility);
-    }
-});
-
-plt = new Tangle($('#platforms')[0], {
-    initialize: function() {
-        this.platformsBounce = "rubber";
-    },
-    update: function() {
-        platforms.bounce(this.platformsBounce);
-    }
-});
 
 function resetAll() {
     var i, l = arguments.length;

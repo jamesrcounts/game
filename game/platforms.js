@@ -103,3 +103,12 @@ var platforms = (function (spec) {
     self.reset();
     return self;
 })(board);
+
+var plt = new Tangle($('#platforms')[0], {
+    initialize: function () {
+        this.platformsBounce = "rubber";
+    },
+    update: function () {
+        platforms.bounce(this.platformsBounce);
+    }
+});
