@@ -1,6 +1,6 @@
 ﻿<html>
 <head>
-    <title>Simple game with HTML5 Canvas</title>
+    <title>Game</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="css/bootstrap.css" rel="stylesheet">
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
@@ -14,6 +14,18 @@
     <script src="lib/jquery-1.10.1/jquery-1.10.1.min.js"> </script>
     <script src="lib/bootstrap/bootstrap.js"> </script>
     <script src="tangle-extensions.js"> </script>
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-42245034-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
 </head>
 <body>
     <div class="span12 row-fluid" style="margin-left: 0">
@@ -33,9 +45,10 @@
                 </li>
                 <li>
                     <a href="#player" data-toggle="tab">Player</a>
-                </li><li>
-                         <a href="#platforms" data-toggle="tab">Platforms</a>
-                     </li>
+                </li>
+                <li>
+                    <a href="#platforms" data-toggle="tab">Platforms</a>
+                </li>
             </ul>
             <div id="tabContent" class="tab-content">
                 <div class="tab-pane fade in active" id="controls">
@@ -59,17 +72,18 @@
                         <div>
                             To use the mouse:
 
-                                <ul>
-                                    <li>The angel will follow the mouse pointer.</li>
-                                    <li>Use the right button to pause or restart the game.</li>
-                                </ul>
+                            <ul>
+                                <li>The angel will follow the mouse pointer.</li>
+                                <li>Use the right button to pause or restart the game.</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
                 <div class="tab-pane fade" id="board">
                     <div class="row-fluid" style="padding-top: 2%">
                         The board is
-                            <span data-var="boardSize" data-values="small medium huge" class="DragText"></span>
+
+                        <span data-var="boardSize" data-values="small medium huge" class="DragText"></span>
                         .
                     </div>
                 </div>
@@ -88,8 +102,8 @@
     </div>
     <script src="board.js"> </script>
     <script src="controls.js"> </script>
-    <script src="points.js"> </script>
     <script src="player.js"></script>
+    <script src="points.js"> </script>
     <script src="clouds.js"></script>
     <script src="platforms.js"></script>
     <script src="game.js"> </script>
