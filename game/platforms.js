@@ -86,7 +86,7 @@ var platforms = (function (spec) {
                 } else if (this[i].x > spec.width - this[i].width) {
                     this[i].direction = -1;
                 }
-                this[i].x += this[i].direction * (i / 2) * ~~(points / 100);
+                this[i].x += this[i].direction * (i / 2) * ~~(points.value / 100);
             }
 
             this[i].y += deltaY;

@@ -14,7 +14,7 @@ var pt;
 var plt;
 
 player.checkEndGame = function () {
-    if (points != 0) {
+    if (points.value != 0) {
         endGame();
     }
 };

@@ -1,9 +1,11 @@
 ﻿"use strict";
 
-var points = (function (spec) {
+var points = (function (spec, hero) {
     var self = { value: 0 };
     self.update = function (deltaY) {
-        if (10 < deltaY) {
+        var highBar = (spec.height * .5);
+        var upHigh = hero.Y < highBar;
+        if (10 < deltaY && upHigh) {
             this.value++;
         }
     };
@@ -19,5 +21,5 @@ var points = (function (spec) {
     };
 
     return self;
-})(board);
+})(board, player);
 
