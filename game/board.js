@@ -49,7 +49,7 @@ var board = (function () {
         }
 
         this.width = defaultWidth * factor;
-        _gaq.push(['_trackEvent', 'Board', 'Resize', size]);
+        _gaq.push(['_trackEvent', 'Adjust', 'Board', 'Size'+size]);
 
     };
 

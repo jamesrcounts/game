@@ -39,6 +39,8 @@ var platforms = (function (spec) {
         }
         
         cor = defaultBounce * factor;
+        _gaq.push(['_trackEvent', 'Adjust', 'Platforms', 'Bounce' + bounce]);
+
     };
 
     self.reset = function () {
