@@ -62,7 +62,8 @@ var board = (function () {
     return self;
 })();
 
-var bt = new Tangle($('#board')[0], {
+var bt;
+bt = new Tangle($('#board')[0], {
     initialize: function () {
         this.boardSize = "small";
     },

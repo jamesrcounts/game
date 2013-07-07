@@ -1,6 +1,7 @@
 ﻿"use strict";
 
-var points = (function (spec, hero) {
+var points;
+points = (function (spec, hero) {
     var self = { value: 0 };
     self.update = function (deltaY) {
         var highBar = (spec.height * .5);

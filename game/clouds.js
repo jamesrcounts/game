@@ -1,5 +1,6 @@
 ﻿"use strict";
-var clouds = (function (spec) {
+var clouds;
+clouds = (function (spec) {
     var self = [];
     self.count = 10;
 

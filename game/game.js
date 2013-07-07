@@ -1,6 +1,5 @@
 ﻿var startGame;
 var checkCollisions;
-var control;
 var endGame;
 var gameLoop;
 var toggleGameLoop;
@@ -10,7 +9,7 @@ var updateEachPiece;
 var drawAllPieces;
 
 player.checkEndGame = function () {
-    if (points.value != 0) {
+    if (points.value !== 0) {
         endGame();
     }
 };
