@@ -37,70 +37,55 @@
     </div>
     <div class="row-fluid">
         <div class="span4" style="padding: 1%">
-            <ul id="tab" class="nav nav-tabs">
-                <li class="active">
-                    <a href="#controls" data-toggle="tab">Controls</a>
-                </li>
-                <li>
-                    <a href="#board" data-toggle="tab">Board</a>
-                </li>
-                <li>
-                    <a href="#player" data-toggle="tab">Player</a>
-                </li>
-                <li>
-                    <a href="#platforms" data-toggle="tab">Platforms</a>
-                </li>
-            </ul>
-            <div id="tabContent" class="tab-content">
-                <div class="tab-pane fade in active" id="controls">
-                    <p class="row-fluid">
-                        I want to use the <span data-var="controlType" class="TKToggle TKSwitch">
-                            <span>keyboard</span>
-                            <span>mouse</span>
-                        </span>.
-                    </p>
-                    <div data-var="controlInstructions" class="row-fluid TKSwitch">
-                        <div>
-                            <p>
-                                To use the keyboard:
-                            </p>
-                            <ul>
-                                <li>-> moves the angel to the right.</li>
-                                <li>&lt;- moves the angel to the left.</li>
-                                <li>'p' pauses or restarts the game.</li>
-                            </ul>
-                        </div>
-                        <div>
-                            To use the mouse:
+
+            <div class="tab-pane fade in active" id="controls">
+                <p class="row-fluid">
+                    I want to use the <span data-var="controlType" class="TKToggle TKSwitch">
+                        <span>keyboard</span>
+                        <span>mouse</span>
+                    </span>.
+                </p>
+                <div data-var="controlInstructions" class="row-fluid TKSwitch">
+                    <div>
+                        <p>
+                            To use the keyboard:
+                        </p>
+                        <ul>
+                            <li>-> moves the angel to the right.</li>
+                            <li>&lt;- moves the angel to the left.</li>
+                            <li>'p' pauses or restarts the game.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        To use the mouse:
 
                             <ul>
                                 <li>The angel will follow the mouse pointer.</li>
                                 <li>Use the right button to pause or restart the game.</li>
                             </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="board">
-                    <div class="row-fluid" style="padding-top: 2%">
-                        The board is
-
-                        <span data-var="boardSize" data-values="small medium huge" class="DragText"></span>
-                        .
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="player">
-                    <div class="row-fluid" style="padding-top: 2%">
-                        The angel flies <span data-var="playerAgility" data-values="slowly normally quickly"
-                            class="DragText"></span>.
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="platforms">
-                    <div class="row-fluid" style="padding-top: 2%">
-                        The platforms are made of <span data-var="platformsBounce" data-values="metal wood canvas rubber flubber"
-                            class="DragText"></span>
                     </div>
                 </div>
             </div>
+
+            <div class="row-fluid" id="board" style="padding-top: 2%">
+                The board is
+
+                        <span data-var="boardSize" data-values="small medium huge" class="DragText"></span>
+                .
+            </div>
+
+
+            <div class="row-fluid" id="player" style="padding-top: 2%">
+                The angel flies <span data-var="playerAgility" data-values="slowly normally quickly"
+                    class="DragText"></span>.
+            </div>
+
+
+            <div class="row-fluid" id="platforms" style="padding-top: 2%">
+                The platforms are made of <span data-var="platformsBounce" data-values="metal wood canvas rubber flubber"
+                    class="DragText"></span>
+            </div>
+
         </div>
     </div>
     <script src="board.js"> </script>
