@@ -1,17 +1,17 @@
 ﻿"use strict";
-var cs = (function() {
+var cs = (function () {
 
     var controls, controlSystem = {};
 
     controls = {
-        left: function() { player.moveLeft(board); },
-        right: function() { player.moveRight(board); },
-        togglePlay: function() { toggleGameLoop(); },
-        teardown: function() {
+        left: function () { player.moveLeft(board); },
+        right: function () { player.moveRight(board); },
+        togglePlay: function () { toggleGameLoop(); },
+        teardown: function () {
         }
     };
 
-    controlSystem.toggleControls = (function() {
+    controlSystem.toggleControls = (function () {
         var control = Object.create(controls);
         var createWith;
         var currentControls = false;
@@ -21,24 +21,24 @@ var cs = (function() {
         var toMouse;
         var toKeyboard;
 
-        createWith = function(ctor) {
+        createWith = function (ctor) {
             control.teardown();
             control = ctor(hero, cvs);
         };
 
-        toMouse = function() {
+        toMouse = function () {
             createWith(createMouseControls);
             toggle = toKeyboard;
         };
 
-        toKeyboard = function() {
+        toKeyboard = function () {
             createWith(createKeyboardControls);
             toggle = toMouse;
         };
 
         toKeyboard();
 
-        return function(controlType, player, canvas) {
+        return function (controlType, player, canvas) {
             if (currentControls !== controlType) {
                 hero = player;
                 cvs = canvas;
@@ -53,7 +53,7 @@ var cs = (function() {
         var rightArrow = 39;
         var letterp = 80;
 
-        var listener = function(event) {
+        var listener = function (event) {
             var key = event.keyCode;
 
             if (key === leftArrow) {
@@ -67,7 +67,7 @@ var cs = (function() {
 
         document.addEventListener('keydown', listener);
 
-        self.teardown = function() {
+        self.teardown = function () {
             document.removeEventListener('keydown', listener);
         };
 
@@ -85,7 +85,7 @@ var cs = (function() {
             return ref.X + canvas.offsetLeft < e.pageX;
         }
 
-        document.onmousemove = function(e) {
+        document.onmousemove = function (e) {
             if (pointerToTheLeft(e)) {
                 self.left();
             } else if (pointerToTheRight(e)) {
@@ -93,15 +93,21 @@ var cs = (function() {
             }
         };
 
-        document.onmousedown = function(e) {
-            if (e.which == 2 || e.which == 3) {
+        var listener = function (event) {
+            var key = event.keyCode;
+            var spaceBar = 32;
+
+            if (key === spaceBar) {
                 self.togglePlay();
             }
         };
 
-        self.teardown = function() {
+        document.addEventListener('keydown', listener);
+
+        self.teardown = function () {
             document.onmousemove = null;
             document.onmousedown = null;
+            document.removeEventListener('keydown', listener);
         };
 
         return self;
@@ -110,9 +116,10 @@ var cs = (function() {
     return controlSystem;
 })();
 
-var ct = new Tangle($("#controls")[0], {
+var ct;
+ct = new Tangle($("#controls")[0], {
     initialize: function () {
-        this.controlType = false;
+        this.controlType = true;
     },
     update: function () {
         this.controlInstructions = this.controlType;
