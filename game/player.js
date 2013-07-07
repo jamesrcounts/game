@@ -60,7 +60,7 @@ var player = (function(spec) {
             }
 
             this.jumpSpeed--;
-            if (this.jumpSpeed == 0) {
+            if (this.jumpSpeed === 0) {
                 this.isJumping = false;
                 this.isFalling = true;
                 this.fallSpeed = 1;
@@ -95,8 +95,8 @@ var player = (function(spec) {
         } catch(e) {
         }
 
-        if (self.interval == 4) {
-            if (self.actualFrame == self.frames) {
+        if (self.interval === 4) {
+            if (self.actualFrame === self.frames) {
                 self.actualFrame = 0;
             } else {
                 self.actualFrame++;
@@ -106,7 +106,8 @@ var player = (function(spec) {
         self.interval++;
     };
     
-    self.jump = function(deltaY) {
+    self.jump = function (deltaY) {
+        deltaY = Math.floor(deltaY);
         if (!self.isJumping && !self.isFalling) {
             self.isJumping = true;
             self.jumpSpeed = deltaY;
@@ -125,6 +126,8 @@ var player = (function(spec) {
         self.moveTo(
             ~~((spec.width - self.width) / 2),
             ~~((spec.height - self.height) / 2));
+        self.isJumping = false;
+        self.isFalling = false;
         self.jump(17);
     };
 
@@ -132,7 +135,8 @@ var player = (function(spec) {
     return self;
 })(board);
 
-var pt = new Tangle($('#player')[0], {
+var pt;
+pt = new Tangle($('#player')[0], {
     initialize: function () {
         this.playerAgility = "normally";
     },

@@ -4,8 +4,9 @@ var platforms = (function (spec) {
     var self = [];
     var position = 0;
     var defaultBounce = 17;
-    var cor = defaultBounce;
-    
+    var factor = 2;
+    var bounceFactors = [1 / 3, 1 / 2, 1, 2, 3, 4];
+
     var createPlatform = function (x, y, type) {
         var platform = { width: 70, height: 20 };
         platform.isMoving = ~~(Math.random() * 2);
@@ -15,32 +16,39 @@ var platforms = (function (spec) {
         platform.type = type;
         platform.firstColor = type === 1 ? '#AADD00' : '#FF8C00';
         platform.secondColor = type === 1 ? '#698B22' : '#EEEE00';
-
+      
         platform.onCollide = function (hero) {
             hero.fallStop();
-            hero.jump(type === 1 ? 3*cor : cor);
+            var index = factor;
+            if (type===1) {
+                index++;
+            }
+            hero.jump(defaultBounce * bounceFactors[index]);
         };
         return platform;
     };
 
     self.count = 7;
 
-    self.bounce = function(bounce) {
-        var factor;
+    self.bounce = function (bounce) {
         switch (true) {
-            case /wood/i.test(bounce):
-                factor = 1 / 3;
+            case /metal/i.test(bounce):
+                factor = 0;
                 break;
-            case /flubber/i.test(bounce):
+            case /wood/i.test(bounce):
+                factor = 1;
+                break;
+            case /rubber/i.test(bounce):
                 factor = 3;
                 break;
+            case /flubber/i.test(bounce):
+                factor = 4;
+                break;
             default:
-                factor = 1;
+                factor = 2;
         }
         
-        cor = defaultBounce * factor;
         _gaq.push(['_trackEvent', 'Adjust', 'Platforms', 'Bounce' + bounce]);
-
     };
 
     self.reset = function () {
@@ -49,7 +57,7 @@ var platforms = (function (spec) {
             self[j] = createPlatform(
                 0,
                 position,
-                ~~(Math.random() * 5) == 0 ? 1 : 0);
+                ~~(Math.random() * 5) === 0 ? 1 : 0);
             self[j].x = Math.random() * (spec.width - self[j].width);
 
             if (position < spec.height - self[j].height) {
@@ -106,9 +114,10 @@ var platforms = (function (spec) {
     return self;
 })(board);
 
-var plt = new Tangle($('#platforms')[0], {
+var plt;
+plt = new Tangle($('#platforms')[0], {
     initialize: function () {
-        this.platformsBounce = "rubber";
+        this.platformsBounce = "canvas";
     },
     update: function () {
         platforms.bounce(this.platformsBounce);
