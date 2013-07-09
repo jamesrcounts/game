@@ -89,6 +89,10 @@ var platforms = (function (spec) {
     };
 
     self.update = function (deltaY) {
+        if (this.count !== this.length) {
+            this.reset();
+        }
+        
         for (var i = 0; i < this.count; i++) {
             if (this[i].isMoving) {
                 if (this[i].x < 0) {
@@ -118,8 +122,10 @@ var plt;
 plt = new Tangle($('#platforms')[0], {
     initialize: function () {
         this.platformsBounce = "canvas";
+        this.platformsCount = 7;
     },
     update: function () {
         platforms.bounce(this.platformsBounce);
+        platforms.count = this.platformsCount;
     }
 });
