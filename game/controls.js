@@ -12,7 +12,6 @@ var cs = (function () {
     };
 
     controlSystem.toggleControls = (function () {
-        var control = Object.create(controls);
         var createWith;
         var currentControls = false;
         var cvs;
@@ -20,10 +19,12 @@ var cs = (function () {
         var toggle;
         var toMouse;
         var toKeyboard;
+        
+        controlSystem.control = Object.create(controls);
 
         createWith = function (ctor) {
-            control.teardown();
-            control = ctor(hero, cvs);
+            controlSystem.control.teardown();
+            controlSystem.control = ctor(hero, cvs);
         };
 
         toMouse = function () {

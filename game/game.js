@@ -73,7 +73,13 @@ gameLoop = function () {
 })(function () { gameLoop(); });
 
 endGame = function () {
-    var ctx = board.context();
+    var ctx = board.context(), tp = cs.control.togglePlay;
+    cs.control.togglePlay = function() {
+        reset();
+        cs.control.togglePlay = tp;
+        cs.control.togglePlay();
+    };
+    
     updatePieces = function () {
     };
     updateView = function () {
