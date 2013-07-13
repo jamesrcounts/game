@@ -94,6 +94,9 @@ var platforms = (function (spec) {
 
     self.update = function (deltaY) {
         if (this.count !== this.length) {
+            while (this.count !== this.length) {
+                this.pop();
+            }
             this.reset();
         }
         
