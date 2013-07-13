@@ -75,9 +75,11 @@ gameLoop = function () {
 endGame = function () {
     var ctx = board.context(), tp = cs.control.togglePlay;
     cs.control.togglePlay = function() {
-        reset();
+        resetAll(player, points, clouds, platforms);
+        updatePieces = updateEachPiece;
+        updateView = drawAllPieces;
+        updateView(board, clouds, player, platforms, points);
         cs.control.togglePlay = tp;
-        cs.control.togglePlay();
     };
     
     updatePieces = function () {
@@ -98,13 +100,6 @@ function resetAll() {
     for (i = 0; i < l; i++) {
         arguments[i].reset();
     }
-}
-
-function reset() {
-    resetAll(player, points, clouds, platforms);
-    updatePieces = updateEachPiece;
-    updateView = drawAllPieces;
-    startGame();
 }
 
 $('#reset').click(function (e) {
