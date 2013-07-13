@@ -88,13 +88,17 @@ var platforms = (function (spec) {
         }
     };
 
+    self.move = function(canMove) {
+        this.canMove = canMove;
+    };
+
     self.update = function (deltaY) {
         if (this.count !== this.length) {
             this.reset();
         }
         
         for (var i = 0; i < this.count; i++) {
-            if (this[i].isMoving) {
+            if (this[i].isMoving && this.canMove) {
                 if (this[i].x < 0) {
                     this[i].direction = 1;
                 } else if (this[i].x > spec.width - this[i].width) {
@@ -123,9 +127,11 @@ plt = new Tangle($('#platforms')[0], {
     initialize: function () {
         this.platformsBounce = "canvas";
         this.platformsCount = 7;
+        this.platformsMove = false;
     },
     update: function () {
         platforms.bounce(this.platformsBounce);
         platforms.count = this.platformsCount;
+        platforms.move(this.platformsMove);
     }
 });
