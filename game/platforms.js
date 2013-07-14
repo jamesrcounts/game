@@ -48,7 +48,7 @@ var platforms = (function (spec) {
                 factor = 2;
         }
         
-        _gaq.push(['_trackEvent', 'Adjust', 'Platforms', 'Bounce' + bounce]);
+        _gaq.push(['_trackEvent','Adjust', 'Platforms', 'Bounce', bounce]);
     };
 
     self.reset = function () {
@@ -88,12 +88,16 @@ var platforms = (function (spec) {
         }
     };
 
-    self.move = function(canMove) {
+    self.move = function (canMove) {
+        if (this.canMove !== canMove) {
+            _gaq.push(['_trackEvent', 'Adjust', 'Platforms', 'CanMove', canMove]);
+        }
         this.canMove = canMove;
     };
 
     self.update = function (deltaY) {
         if (this.count !== this.length) {
+            _gaq.push(['_trackEvent', 'Adjust', 'Platforms', 'Count', this.count]);
             while (this.count !== this.length) {
                 this.pop();
             }

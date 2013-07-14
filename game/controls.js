@@ -6,7 +6,9 @@ var cs = (function () {
     controls = {
         left: function () { player.moveLeft(board); },
         right: function () { player.moveRight(board); },
-        togglePlay: function () { toggleGameLoop(); },
+        togglePlay: function () {
+            toggleGameLoop();
+        },
         teardown: function () {
         }
     };
@@ -41,6 +43,7 @@ var cs = (function () {
 
         return function (controlType, player, canvas) {
             if (currentControls !== controlType) {
+                _gaq.push(['_trackEvent', 'Adjust', 'Controls', 'ControlType', controlType]);
                 hero = player;
                 cvs = canvas;
                 toggle();

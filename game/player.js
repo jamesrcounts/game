@@ -31,7 +31,7 @@ var player = (function(spec) {
         }
 
         speed = defaultSpeed * factor;
-        _gaq.push(['_trackEvent', 'Adjust', 'Player', 'Agility' + agility]);
+        _gaq.push(['_trackEvent', 'Adjust','Player', 'Agility', agility]);
 
     };
 

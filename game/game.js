@@ -56,15 +56,19 @@ gameLoop = function () {
     createjs.Ticker.useRAF = true;
 
     startGame = function () {
+        _gaq.push(['_trackEvent', 'Game', 'Play', 'Start']);
         createjs.Ticker.addEventListener("tick", u);
     };
 
     var resume = function () {
+        
+
         startGame();
         toggleGameLoop = halt;
     };
 
     var halt = function () {
+        _gaq.push(['_trackEvent', 'Game', 'Play', 'Stop']);
         createjs.Ticker.removeEventListener("tick", u);
         toggleGameLoop = resume;
     };
@@ -74,11 +78,12 @@ gameLoop = function () {
 
 endGame = function () {
     var ctx = board.context(), tp = cs.control.togglePlay;
-    cs.control.togglePlay = function() {
+    cs.control.togglePlay = function () {
         resetAll(player, points, clouds, platforms);
         updatePieces = updateEachPiece;
         updateView = drawAllPieces;
         updateView(board, clouds, player, platforms, points);
+        _gaq.push(['_trackEvent', 'Game', 'Reset']);
         cs.control.togglePlay = tp;
     };
     
@@ -93,6 +98,7 @@ endGame = function () {
     };
 
     toggleGameLoop();
+    _gaq.push(['_trackEvent', 'Game', 'Play', 'Score', points.value]);
 };
 
 function resetAll() {
@@ -102,8 +108,3 @@ function resetAll() {
     }
 }
 
-$('#reset').click(function (e) {
-    _gaq.push(['_trackEvent', 'Game', 'Reset', 'Game Reset']);
-    e.preventDefault();
-    reset();
-});

@@ -6,10 +6,10 @@ var board = (function () {
     var cvs;
     var ctx;
 
-    var setupCanvas = function() {
+    var setupCanvas = function () {
         if (!cvs) {
             cvs = $('#c')[0];
-            cvs.resize = function() {
+            cvs.resize = function () {
                 this.width = self.width;
                 this.height = self.height;
             };
@@ -19,14 +19,14 @@ var board = (function () {
         return cvs;
     };
 
-    var setupContext = function() {
+    var setupContext = function () {
         if (!ctx) {
             ctx = cvs.getContext('2d');
         }
         return ctx;
     };
 
-    self.draw = function() {
+    self.draw = function () {
         cvs.resize();
         ctx.fillStyle = this.color;
         ctx.beginPath();
@@ -35,7 +35,7 @@ var board = (function () {
         ctx.fill();
     };
 
-    self.size = function(size) {
+    self.size = function (size) {
         var factor;
         switch (true) {
             case /huge/i.test(size):
@@ -49,7 +49,7 @@ var board = (function () {
         }
 
         this.width = defaultWidth * factor;
-        _gaq.push(['_trackEvent', 'Adjust', 'Board', 'Size'+size]);
+        _gaq.push(['_trackEvent', 'Adjust', 'Board', 'Size', size]);
 
     };
 
