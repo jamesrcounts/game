@@ -52,7 +52,7 @@ var cs = (function () {
         var self = Object.create(controls);
         var leftArrow = 37;
         var rightArrow = 39;
-        var letterp = 80;
+        var spaceBar = 32;
 
         var listener = function (event) {
             var key = event.keyCode;
@@ -61,7 +61,7 @@ var cs = (function () {
                 self.left();
             } else if (key === rightArrow) {
                 self.right();
-            } else if (key === letterp) {
+            } else if (key === spaceBar) {
                 self.togglePlay();
             }
         };
