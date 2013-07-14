@@ -70,6 +70,7 @@
     <Content Include="game.js" />
     <Content Include="img\glyphicons-halflings-white.png" />
     <Content Include="img\glyphicons-halflings.png" />
+    <Content Include="index.html" />
     <Content Include="lib\bootstrap\bootstrap.js" />
     <Content Include="lib\bootstrap\bootstrap.min.js" />
     <Content Include="lib\easeljs-0.6.0\easeljs-0.6.0.min.js" />
