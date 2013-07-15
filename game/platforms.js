@@ -6,7 +6,8 @@ var platforms = (function (spec) {
     var defaultBounce = 17;
     var factor = 2;
     var bounceFactors = [1 / 3, 1 / 2, 1, 2, 3, 4];
-
+    var groupWith;
+    
     var createPlatform = function (x, y, type) {
         var platform = { width: 70, height: 20 };
         platform.isMoving = ~~(Math.random() * 2);
@@ -88,6 +89,53 @@ var platforms = (function (spec) {
         }
     };
 
+    self.grouping = function(closeGrouping) {
+        if (this.closeGrouping !== closeGrouping) {
+            _gaq.push(['_trackEvent', 'Adjust', 'Platforms', 'Grouping', closeGrouping]);
+            this.closeGrouping = closeGrouping;
+            self.toggleGrouping();
+        }
+    };
+
+    self.toggleGrouping = (function() {
+        var toClose, toRandom, toggle;
+        self.closeGrouping = false;
+        
+        function createCloseGrouping() {
+            return {
+                generateX: function (boardWidth, platform) {
+                    var seed = Math.random();
+                    var offset = platform.width * seed;
+                    var direction = ~~(Math.random() * 2) ? -1 : 1;
+                    var pos = platform.x + (direction * offset);
+                    return pos;
+                }
+            };
+        }
+        
+
+        function createRandomGrouping() {
+            return {
+                generateX: function(boardWidth, platform) {
+                    return Math.random() * (boardWidth - platform.width);
+                }
+            };
+        }
+
+        toClose = function () {
+            groupWith = createCloseGrouping();
+            toggle = toRandom;
+        };
+
+        toRandom = function () {
+            groupWith = createRandomGrouping();
+            toggle = toClose;
+        };
+
+        toRandom();
+        return toggle;
+    })();
+
     self.move = function (canMove) {
         if (this.canMove !== canMove) {
             _gaq.push(['_trackEvent', 'Adjust', 'Platforms', 'CanMove', canMove]);
@@ -118,7 +166,8 @@ var platforms = (function (spec) {
 
             if (this[i].y > board.height) {
                 this[i] = createPlatform(
-                    Math.random() * (board.width - this[i].width),
+                    groupWith.generateX(board.width, this[i]),
+                    
                     this[i].y - board.height,
                     ~~(Math.random() * 5) == 0 ? 1 : 0);
             }
@@ -135,10 +184,12 @@ plt = new Tangle($('#platforms')[0], {
         this.platformsBounce = "canvas";
         this.platformsCount = 7;
         this.platformsMove = false;
+        this.platformsGrouping = false;
     },
     update: function () {
         platforms.bounce(this.platformsBounce);
         platforms.count = this.platformsCount;
         platforms.move(this.platformsMove);
+        platforms.grouping(this.platformsGrouping);
     }
 });
