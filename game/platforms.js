@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 var platforms = (function (spec) {
     var self = [];
@@ -93,11 +93,133 @@ var platforms = (function (spec) {
         if (this.closeGrouping !== closeGrouping) {
             _gaq.push(['_trackEvent', 'Adjust', 'Platforms', 'Grouping', closeGrouping]);
             this.closeGrouping = closeGrouping;
-            self.toggleGrouping();
+            self.changeGrouping(this.closeGrouping);
         }
     };
 
-    self.toggleGrouping = (function() {
+            self.changeGrouping = function(grouping) 
+            {
+                       
+                function createCloseGrouping() {
+            
+                return {
+                generateX: function (boardWidth, platform) {
+                    var seed = Math.random();
+                    var offset = platform.width * seed;
+                    var direction = ~~(Math.random() * 2) ? -1 : 1;
+                    var pos = platform.x + (direction * offset);
+                    return pos;
+                }
+            };
+        }
+        
+                function createRandomGrouping() {
+				return {
+                generateX: function(boardWidth, platform) {
+                    return Math.random() * (boardWidth - platform.width);
+                }
+            };
+        }
+		
+				function createHistogramGrouping(style)
+				{
+					return {
+					generateX: function(boardWidth, platform){
+						var rand = Math.random();
+						if ( rand < .68) //68-95-99.7 rule
+						{	
+							if(style === "centered")
+							var pos = ((boardWidth/3 + (Math.random()*(boardWidth/3))) - platform.width/2);
+							
+							if(style === "left")
+							var pos = (((Math.random()*(boardWidth/3))) - platform.width/2);
+							
+							if(style === "right")
+							var pos = ((2*boardWidth/3 + (Math.random()*(boardWidth/3))) - platform.width/2);
+						
+							if(style === "bimodal")
+							{
+								var side = ~~(Math.random() * 2) ? "left" : "right";
+								
+								if (side === "left")
+								var pos = (((Math.random()*(boardWidth/3))) - platform.width/2);
+								
+								else
+								var pos = ((2*boardWidth/3 + (Math.random()*(boardWidth/3))) - platform.width/2);
+							}
+						}
+						if (rand < .95 && rand >= .68)
+						{	
+							if(style === "centered" || style === "bimodal")
+							{
+								//left or right side of the "histogram"?
+								var side = ~~(Math.random() * 2) ? "left" : "right";
+								if (side === "left")
+									var pos = ((boardWidth/6 + (Math.random()*(boardWidth/6))) - platform.width/2) ;
+								else
+									var pos = ((2*boardWidth/3 + (Math.random()*(boardWidth/6))) - platform.width/2) ;
+							}
+							if(style=== "left" || style === "right")
+							{
+								var pos = ((boardWidth/3 + (Math.random()*(boardWidth/3))) - platform.width/2);
+							}
+						}
+						if (rand >= .95)
+						{
+							if(style === "centered")
+							{
+								//left or right side of the "histogram"?
+								var side = ~~(Math.random() * 2) ? "left" : "right";
+								if (side === "left")
+									var pos = (( (Math.random()*(boardWidth/6))) - platform.width/2) ;
+								else
+									var pos = ((5*boardWidth/6 + (Math.random()*(boardWidth/6))) - platform.width/2) ;
+							}
+							if (style === "left")
+							{
+								var pos = (( (Math.random()*(boardWidth/6))) - platform.width/2) ;
+							}
+							if (style === "right")
+							{
+								var pos = ((5*boardWidth/6 + (Math.random()*(boardWidth/6))) - platform.width/2) ;
+							}
+							
+							if (style === "bimodal")
+							{
+								var pos = ((boardWidth/3 + (Math.random()*(boardWidth/3))) - platform.width/2);
+							}
+						}
+						return pos;
+					}
+				};
+				}
+            switch (grouping) {
+            case "anywhere":
+                groupWith = createRandomGrouping();
+                break;
+            case "slightly-shifted":
+                groupWith = createCloseGrouping();
+                break;
+            case "mostly-centered":
+                groupWith = createHistogramGrouping("centered");
+                break;
+			case "mostly-on-left":
+				groupWith = createHistogramGrouping("left");
+                break;
+			case "mostly-on-right":
+				groupWith = createHistogramGrouping("right");
+                break;
+			case "mostly-on-left&right":
+				groupWith = createHistogramGrouping("bimodal");
+                break;
+            default:
+                groupWith = createRandomGrouping();
+        }
+        _gaq.push(['_trackEvent','Adjust', 'Platforms', 'Grouping', grouping]);
+        return; 
+            };  
+	
+	/*self.toggleGrouping = (function(grouping) {
         var toClose, toRandom, toggle;
         self.closeGrouping = false;
         
@@ -134,7 +256,7 @@ var platforms = (function (spec) {
 
         toRandom();
         return toggle;
-    })();
+    })();*/
 
     self.move = function (canMove) {
         if (this.canMove !== canMove) {
@@ -184,7 +306,7 @@ plt = new Tangle($('#platforms')[0], {
         this.platformsBounce = "canvas";
         this.platformsCount = 7;
         this.platformsMove = false;
-        this.platformsGrouping = false;
+        this.platformsGrouping = "mostly-centered";
     },
     update: function () {
         platforms.bounce(this.platformsBounce);
