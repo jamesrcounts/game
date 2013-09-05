@@ -89,8 +89,10 @@
     <Content Include="platforms.js" />
     <Content Include="player.js" />
     <Content Include="points.js" />
-    <Content Include="spec\PlayerSpec.js" />
+    <Content Include="SpecRunner.html" />
+    <Content Include="spec\DataCollectionSpec.js" />
     <Content Include="spec\SpecHelper.js" />
+    <Content Include="src\Main.js" />
     <Content Include="src\Player.js" />
     <Content Include="src\Song.js" />
     <Content Include="tangle-extensions.js" />
