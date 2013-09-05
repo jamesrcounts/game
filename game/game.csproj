@@ -39,6 +39,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Nancy">
+      <HintPath>..\packages\Nancy.0.18.0\lib\net40\Nancy.dll</HintPath>
+    </Reference>
+    <Reference Include="Nancy.Hosting.Aspnet">
+      <HintPath>..\packages\Nancy.Hosting.Aspnet.0.18.0\lib\net40\Nancy.Hosting.Aspnet.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -57,8 +63,8 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="angel.png" />
-    <Content Include="board.js" />
+    <Content Include="img\angel.png" />
+    <Content Include="src\board.js" />
     <Content Include="clouds.js" />
     <Content Include="controls.js" />
     <Content Include="css\bootstrap-responsive.css" />
@@ -87,23 +93,24 @@
     <Content Include="lib\Tangle-0.1.0\TangleKit\TangleKit.js" />
     <Content Include="lib\Tangle-0.1.0\TangleTemplate.html" />
     <Content Include="platforms.js" />
-    <Content Include="player.js" />
+    <Content Include="src\player.js" />
     <Content Include="points.js" />
     <Content Include="SpecRunner.html" />
     <Content Include="spec\DataCollectionSpec.js" />
     <Content Include="spec\SpecHelper.js" />
     <Content Include="src\Main.js" />
-    <Content Include="src\Player.js" />
-    <Content Include="src\Song.js" />
-    <Content Include="tangle-extensions.js" />
+    <Content Include="src\tangle-extensions.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\Bootstrapper.cs" />
+    <Compile Include="Modules\DefaultModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\jquery-1.10.1\jquery-1.10.1.min.map" />
     <Content Include="lib\jasmine-1.3.1\MIT.LICENSE" />
+    <Content Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

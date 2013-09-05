@@ -62,7 +62,7 @@ var global = function () {
         };
 
         $.ajax(
-            "http://localhost:7820/Collect", {
+            "/Collect", {
                 data: result,
                 dataType: 'jsonp',
                 contentType: 'application/json; charset=utf-8',

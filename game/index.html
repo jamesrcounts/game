@@ -13,7 +13,7 @@
     <script src="lib/Tangle-0.1.0/TangleKit/BVTouchable.js"> </script>
     <script src="lib/jquery-1.10.1/jquery-1.10.1.min.js"> </script>
     <script src="lib/bootstrap/bootstrap.js"> </script>
-    <script src="tangle-extensions.js"> </script>
+    <script src="src/tangle-extensions.js"> </script>
     <script type="text/javascript">
 
         var _gaq = _gaq || [];
@@ -48,14 +48,14 @@
                     <span>never move</span>
                     <span>can move when the score is high enough</span>
                 </span>.
+
                 <!--New platforms appear <span data-var="platformsGrouping" class="TKToggle TKSwitch">
                                          <span>anywhere</span><span>near their old locations</span>
-                                     </span>.-->
-
-                <span id="platforms">New platforms appear <span data-var="platformsGrouping" data-values="anywhere slightly-shifted mostly-centered mostly-on-left mostly-on-right mostly-on-left&right" class="DragText"></span>.
+                                     .-->
+                New platforms appear <span data-var="platformsGrouping" data-values="anywhere slightly-shifted mostly-centered mostly-on-left mostly-on-right mostly-on-left&amp;right" class="DragText"></span>.
                 </span>
-                <div id="controls">
-                    To play the game:
+            <div id="controls">
+                To play the game:
 
                 <ul>
                     <li>The angel will follow the mouse pointer to the left or right.</li>
@@ -63,15 +63,15 @@
                     <li>Spacebar to pause or resume the game.</li>
                     <li>Spacebar to restart after game over.</li>
                 </ul>
-                </div>
+            </div>
         </div>
     </div>
-    <script src="board.js"> </script>
-    <script src="player.js"></script>
-    <script src="controls.js"> </script>
-    <script src="points.js"> </script>
-    <script src="clouds.js"></script>
-    <script src="platforms.js"></script>
-    <script src="game.js"> </script>
+    <script src="src/board.js"> </script>
+    <script src="src/player.js"></script>
+    <script src="src/controls.js"> </script>
+    <script src="src/points.js"> </script>
+    <script src="src/clouds.js"></script>
+    <script src="src/platforms.js"></script>
+    <script src="src/game.js"> </script>
 </body>
 </html>
