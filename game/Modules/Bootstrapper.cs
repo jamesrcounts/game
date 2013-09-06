@@ -16,9 +16,6 @@
             base.ConfigureConventions(nancyConventions);
 
             nancyConventions.StaticContentsConventions.Add(
-                Nancy.Conventions.StaticContentConventionBuilder.AddFile("/index.html", "index.html"));
-
-            nancyConventions.StaticContentsConventions.Add(
                 Nancy.Conventions.StaticContentConventionBuilder.AddDirectory("/lib"));
             nancyConventions.StaticContentsConventions.Add(
                 Nancy.Conventions.StaticContentConventionBuilder.AddDirectory("/img"));

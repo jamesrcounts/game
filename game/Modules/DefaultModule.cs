@@ -21,7 +21,7 @@ namespace Game.Modules
         /// </summary>
         public DefaultModule()
         {
-            this.Get["/hello"] = _ => "Hello World";
+            this.Get["/"] = _ => View["index"];
         }
     }
 }
