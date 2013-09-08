@@ -1,11 +1,23 @@
-﻿namespace Game.Modules
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Bootstrapper.cs" company="Jim Counts">
+//   Copyright Jim Counts 2013
+// </copyright>
+// <summary>
+//   Configures Nancy.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Game.Modules
 {
     using Nancy;
 
     /// <summary>
     /// Configures Nancy.
     /// </summary>
+    // ReSharper disable UnusedMember.Global
     public class Bootstrapper : DefaultNancyBootstrapper
+
+    // ReSharper restore UnusedMember.Global
     {
         /// <summary>
         /// Lets Nancy know about the static files.
@@ -24,6 +36,8 @@
 
             nancyConventions.StaticContentsConventions.Add(
                 Nancy.Conventions.StaticContentConventionBuilder.AddDirectory("/src"));
+            nancyConventions.StaticContentsConventions.Add(
+                Nancy.Conventions.StaticContentConventionBuilder.AddDirectory("/spec"));
         }
     }
 }

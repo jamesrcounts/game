@@ -49,7 +49,7 @@ var global = function () {
     };
 
     self.getDate = function () {
-        return Date();
+        return new Date().toJSON();
     };
 
     self.collectDataAsync = function ($category, $label, $value) {
@@ -61,12 +61,7 @@ var global = function () {
             value: $value,
         };
 
-        $.ajax(
-            "/Collect", {
-                data: result,
-                dataType: 'jsonp',
-                contentType: 'application/json; charset=utf-8',
-            });
+        $.post("/Collect", result);
 
         return result;
     };

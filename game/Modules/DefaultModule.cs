@@ -9,55 +9,49 @@
 
 namespace Game.Modules
 {
-    using System;
-    using System.Configuration;
-    using Microsoft.WindowsAzure.Storage;
+    using System.Threading.Tasks;
     using Microsoft.WindowsAzure.Storage.Table;
     using Nancy;
     using Nancy.ModelBinding;
 
-    public class DataPoint : TableEntity
-    {
-        public DataPoint()
-        {
-            this.RowKey = Guid.NewGuid().ToString();
-        }
-
-        public string Category { get; set; }
-
-        public DateTime CreateDate { get; set; }
-
-        public string Label { get; set; }
-
-        public string Value { get; set; }
-    }
-
     /// <summary>
     /// Hosts the server side code.
     /// </summary>
+    // ReSharper disable UnusedMember.Global
     public class DefaultModule : NancyModule
+
+    // ReSharper restore UnusedMember.Global
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultModule"/> class.
         /// </summary>
         public DefaultModule()
         {
-            this.Get["/"] = _ => View["index"];
-            var cs = ConfigurationManager.AppSettings["StorageConnectionString"];
-            var table = CloudStorageAccount.Parse(cs)
-                                           .CreateCloudTableClient()
-                                           .GetTableReference("DataPoints");
-            this.Get["/Collect"] = _ => this.SaveTo(table);
-            this.Post["/Collect"] = _ => this.SaveTo(table);
+            this.Get["/"] = _ => this.View["index"];
+            this.Get["/SpecRunner"] = _ => this.View["SpecRunner"];
+            this.Post["/Collect"] = delegate
+                {
+                    Task.Factory.StartNew(() => this.Save());
+                    return HttpStatusCode.OK;
+                };
         }
 
-        private Response SaveTo(CloudTable table)
+        /// <summary>
+        /// Saves to.
+        /// </summary>
+        /// <returns>
+        /// Status 200 if the task completes without error.
+        /// </returns>
+        private Response Save()
         {
-            var dataPoint = this.Bind<DataPoint>();
+            var dataPoint = this.Bind<GameEvent>();
             var operation = TableOperation.Insert(dataPoint);
-            table.Execute(operation);
+            using (var r = TableReferencePool.Pool.Acquire())
+            {
+                r.CloudTable.Execute(operation);
+            }
 
-            return Response.AsJson(dataPoint);
+            return HttpStatusCode.OK;
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿"use strict";
-
-var player = (function (spec) {
+﻿var player = (function (spec) {
+    "use strict";
+    var g = global();
     var self = new Image();
     var defaultSpeed = 5;
     var speed = defaultSpeed;
@@ -31,7 +31,10 @@ var player = (function (spec) {
         }
 
         speed = defaultSpeed * factor;
-        _gaq.push(['_trackEvent', 'Adjust', 'Player', 'Agility', agility]);
+        g.collectDataAsync(
+                "Player",
+                "Agility",
+                agility);
     };
 
     self.moveTo = function (x, y) {
