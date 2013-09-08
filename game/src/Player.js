@@ -1,6 +1,5 @@
 ﻿var player = (function (spec) {
     "use strict";
-    var g = global();
     var self = new Image();
     var defaultSpeed = 5;
     var speed = defaultSpeed;
@@ -31,7 +30,7 @@
         }
 
         speed = defaultSpeed * factor;
-        g.collectDataAsync(
+        self.g.collectDataAsync(
                 "Player",
                 "Agility",
                 agility);

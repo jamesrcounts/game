@@ -1,8 +1,11 @@
 ﻿/*jshint bitwise: false*/
 var global = function () {
     "use strict";
-
     var self = {};
+
+    require(["player"], function (player) {
+        player.g = self;
+    });
 
     var setSessionCookie = function (name, value) {
         var cookie = name + "=" + value;
