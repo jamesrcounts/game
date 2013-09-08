@@ -97,7 +97,7 @@ namespace Game.Modules
             /// <summary>
             /// The connection string
             /// </summary>
-            private static readonly string ConnectionString = ConfigurationManager.AppSettings["StorageConnectionString"];
+            private static readonly ConnectionStringSettings ConnectionInfo = ConfigurationManager.ConnectionStrings["StorageConnectionString"];
 
             /// <summary>
             /// The cloud table.
@@ -114,7 +114,7 @@ namespace Game.Modules
             /// </summary>
             public CloudTableReference()
             {
-                var table = CloudStorageAccount.Parse(ConnectionString)
+                var table = CloudStorageAccount.Parse(ConnectionInfo.ConnectionString)
                                                .CreateCloudTableClient()
                                                .GetTableReference("GameEvents");
                 table.CreateIfNotExists();
