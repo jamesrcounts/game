@@ -1,110 +1,130 @@
-﻿require([], function () {
-    "use strict";
-    var startGame;
-    var checkCollisions;
-    var endGame;
-    var gameLoop;
-    var toggleGameLoop;
-    var updatePieces;
-    var updateView;
-    var updateEachPiece;
-    var drawAllPieces;
+﻿require(
+    ["data", "board", "clouds", "platforms", "player"],
+    function (data, board, clouds, platforms, player) {
+        "use strict";
+        var createjs = window.createjs
+            , drawAllPieces
+            , gameLoop
+            , toggleGameLoop
+            , updateEachPiece
+            , updatePieces
+            , updateView;
+        //var startGame;
+        //var checkCollisions;
+        //var endGame;
 
-    player.checkEndGame = function () {
-        if (points.value !== 0) {
-            endGame();
-        }
-    };
+        //player.checkEndGame = function () {
+        //    if (points.value !== 0) {
+        //        endGame();
+        //    }
+        //};
 
-    checkCollisions = function (hero, platforms) {
-        for (var i = 0; i < platforms.count; i++) {
-            if (hero.isFalling &&
-                hero.X < platforms[i].x + platforms[i].width &&
-                hero.X + hero.width > platforms[i].x &&
-                hero.Y + hero.height > platforms[i].y &&
-                hero.Y + hero.height < platforms[i].y + platforms[i].height) {
-                platforms[i].onCollide(hero);
+        //checkCollisions = function (hero, platforms) {
+        //    for (var i = 0; i < platforms.count; i++) {
+        //        if (hero.isFalling &&
+        //            hero.X < platforms[i].x + platforms[i].width &&
+        //            hero.X + hero.width > platforms[i].x &&
+        //            hero.Y + hero.height > platforms[i].y &&
+        //            hero.Y + hero.height < platforms[i].y + platforms[i].height) {
+        //            platforms[i].onCollide(hero);
+        //        }
+        //    }
+        //};
+
+        updateEachPiece = function (
+            $clouds
+          , $platforms
+            //,hero
+            //    , clouds
+        ) {
+            var speed = 2;
+
+            //    checkCollisions(hero, platforms);
+            //    speed = hero.update();
+            $clouds.update(speed * 0.5);
+            $platforms.update(speed);
+            //    points.update(hero.jumpSpeed);
+        };
+
+        updatePieces = updateEachPiece;
+
+        drawAllPieces = function () {
+            var i, l = arguments.length;
+            for (i = 0; i < l; i++) {
+                arguments[i].draw();
             }
-        }
-    };
+        };
+        updateView = drawAllPieces;
 
-    updateEachPiece = function (hero, clouds, platforms) {
-        var speed;
-
-        checkCollisions(hero, platforms);
-        speed = hero.update();
-        clouds.update(speed * 0.5);
-        platforms.update(speed);
-        points.update(hero.jumpSpeed);
-    };
-
-    updatePieces = updateEachPiece;
-
-    drawAllPieces = function () {
-        var i, l = arguments.length;
-        for (i = 0; i < l; i++) {
-            arguments[i].draw();
-        }
-    };
-    updateView = drawAllPieces;
-
-    gameLoop = function () {
-        updatePieces(player, clouds, platforms, points);
-        updateView(board, clouds, player, platforms, points);
-    };
-
-    (function (u) {
-        createjs.Ticker.setFPS(60);
-        createjs.Ticker.useRAF = true;
-
-        startGame = function () {
-            _gaq.push(['_trackEvent', 'Game', 'Play', 'Start']);
-            createjs.Ticker.addEventListener("tick", u);
+        gameLoop = function () {
+            updatePieces(
+            clouds
+            , platforms
+            //, player
+            //, points
+            );
+            updateView(
+                board
+                , clouds
+                , platforms
+                , player
+                //, points
+            );
         };
 
-        var resume = function () {
-            startGame();
-            toggleGameLoop = halt;
-        };
+        (function (u) {
+            var halt, resume, startGame;
+            createjs.Ticker.setFPS(60);
+            createjs.Ticker.useRAF = true;
 
-        var halt = function () {
-            _gaq.push(['_trackEvent', 'Game', 'Play', 'Stop']);
-            createjs.Ticker.removeEventListener("tick", u);
-            toggleGameLoop = resume;
-        };
+            startGame = function () {
+                data.collectDataAsync("Game", "Play", "Start");
+                createjs.Ticker.addEventListener("tick", u);
+            };
 
-        resume();
-    })(function () { gameLoop(); });
+            resume = function () {
+                startGame();
+                toggleGameLoop = halt;
+            };
 
-    endGame = function () {
-        var ctx = board.context(), tp = cs.control.togglePlay;
-        cs.control.togglePlay = function () {
-            resetAll(player, points, clouds, platforms);
-            updatePieces = updateEachPiece;
-            updateView = drawAllPieces;
-            updateView(board, clouds, player, platforms, points);
-            _gaq.push(['_trackEvent', 'Game', 'Reset']);
-            cs.control.togglePlay = tp;
-        };
+            halt = function () {
+                data.collectDataAsync("Game", "Play", "Stop");
+                createjs.Ticker.removeEventListener("tick", u);
+                toggleGameLoop = resume;
+            };
 
-        updatePieces = function () {
-        };
-        updateView = function () {
-            board.draw();
-            ctx.fillStyle = "Black";
-            ctx.font = "10pt Arial";
-            ctx.fillText("GAME OVER", (board.width / 2) - 60, (board.height / 2) - 50);
-            ctx.fillText("YOUR RESULT:" + points.value, board.width / 2 - 60, board.height / 2 - 30);
-        };
+            resume();
+        })(function () { gameLoop(); });
 
-        toggleGameLoop();
-        _gaq.push(['_trackEvent', 'Game', 'Play', 'Score', points.value]);
-    };
+        //endGame = function () {
+        //    var ctx = board.context(), tp = cs.control.togglePlay;
+        //    cs.control.togglePlay = function () {
+        //        resetAll(player, points, clouds, platforms);
+        //        updatePieces = updateEachPiece;
+        //        updateView = drawAllPieces;
+        //        updateView(board, clouds, player, platforms, points);
+        //        _gaq.push(['_trackEvent', 'Game', 'Reset']);
+        //        cs.control.togglePlay = tp;
+        //    };
 
-    function resetAll() {
-        var i, l = arguments.length;
-        for (i = 0; i < l; i++) {
-            arguments[i].reset();
-        }
-    }
-});
+        //    updatePieces = function () {
+        //    };
+        //    updateView = function () {
+        //        board.draw();
+        //        ctx.fillStyle = "Black";
+        //        ctx.font = "10pt Arial";
+        //        ctx.fillText("GAME OVER", (board.width / 2) - 60, (board.height / 2) - 50);
+        //        ctx.fillText("YOUR RESULT:" + points.value, board.width / 2 - 60, board.height / 2 - 30);
+        //    };
+
+        //    toggleGameLoop();
+        //    _gaq.push(['_trackEvent', 'Game', 'Play', 'Score', points.value]);
+        //};
+
+        //function resetAll() {
+        //    var i, l = arguments.length;
+        //    for (i = 0; i < l; i++) {
+        //        arguments[i].reset();
+        //    }
+        //}
+    });

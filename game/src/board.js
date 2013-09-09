@@ -1,12 +1,13 @@
-﻿"use strict";
+﻿define(["data"], function (data) {
+    "use strict";
+    var Tangle = window.Tangle, defaultWidth = 320, cvs, ctx, lazyCanvas, lazyContext;
+    var self = {
+        width: defaultWidth,
+        height: 500,
+        color: '#d0e7f9'
+    };
 
-var board = (function () {
-    var defaultWidth = 320;
-    var self = { width: defaultWidth, height: 500, color: '#d0e7f9' };
-    var cvs;
-    var ctx;
-
-    var setupCanvas = function () {
+    lazyCanvas = function () {
         if (!cvs) {
             cvs = $('#c')[0];
             cvs.resize = function () {
@@ -19,55 +20,50 @@ var board = (function () {
         return cvs;
     };
 
-    var setupContext = function () {
+    lazyContext = function () {
         if (!ctx) {
-            ctx = cvs.getContext('2d');
+            ctx = lazyCanvas().getContext('2d');
         }
         return ctx;
     };
 
     self.draw = function () {
-        cvs.resize();
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.rect(0, 0, this.width, this.height);
-        ctx.closePath();
-        ctx.fill();
+        lazyCanvas().resize();
+        lazyContext().fillStyle = this.color;
+        lazyContext().beginPath();
+        lazyContext().rect(0, 0, this.width, this.height);
+        lazyContext().closePath();
+        lazyContext().fill();
     };
 
     self.size = function (size) {
         var factor;
-        switch (true) {
-            case /huge/i.test(size):
-                factor = 3;
-                break;
-            case /medium/i.test(size):
-                factor = 2;
-                break;
-            default:
-                factor = 1;
+        if (/huge/i.test(size)) {
+            factor = 3;
+        } else if (/medium/i.test(size)) {
+            factor = 2;
+        } else {
+            factor = 1;
         }
 
         this.width = defaultWidth * factor;
-        _gaq.push(['_trackEvent', 'Adjust', 'Board', 'Size', size]);
-
+        data.collectDataAsync("Board", "Size", size);
     };
 
-    self.canvas = setupCanvas;
-    self.context = setupContext;
+    self.canvas = lazyCanvas;
+    self.context = lazyContext;
 
-    cvs = setupCanvas();
-    ctx = setupContext();
+    //cvs = lazyCanvas();
+    //ctx = lazyContext();
+
+    self.bt = new Tangle($('#board')[0], {
+        initialize: function () {
+            this.boardSize = "small";
+        },
+        update: function () {
+            self.size(this.boardSize);
+        }
+    });
 
     return self;
-})();
-
-var bt;
-bt = new Tangle($('#board')[0], {
-    initialize: function () {
-        this.boardSize = "small";
-    },
-    update: function () {
-        board.size(this.boardSize);
-    }
 });

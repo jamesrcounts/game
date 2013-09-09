@@ -1,89 +1,36 @@
-﻿var player = (function (spec) {
+﻿/*jshint bitwise: false*/
+define(["board", "data"], function (board, data) {
     "use strict";
-    var self = new Image();
-    var defaultSpeed = 5;
-    var speed = defaultSpeed;
-    self.src = "img/angel.png";
-    self.isJumping = false;
-    self.isFalling = false;
-    self.jumpSpeed = 0;
-    self.fallSpeed = 0;
-    self.width = 65;
-    self.height = 95;
+    var Tangle = window.Tangle, defaultSpeed = 5, self = new Image(), speed;
     self.X = 0;
     self.Y = 0;
-    self.frames = 1;
     self.actualFrame = 0;
+    self.frames = 1;
+    self.height = 95;
     self.interval = 0;
+    self.src = "img/angel.png";
+    self.width = 65;
+
+    speed = defaultSpeed;
 
     self.agility = function (agility) {
         var factor;
-        switch (true) {
-            case /slowly/i.test(agility):
-                factor = 1 / 3;
-                break;
-            case /quickly/i.test(agility):
-                factor = 3;
-                break;
-            default:
-                factor = 1;
+        if (/slowly/i.test(agility)) {
+            factor = 1 / 3;
+        }
+        else if (/quickly/i.test(agility)) {
+            factor = 3;
+        } else {
+            factor = 1;
         }
 
         speed = defaultSpeed * factor;
-        self.g.collectDataAsync(
-                "Player",
-                "Agility",
-                agility);
-    };
-
-    self.moveTo = function (x, y) {
-        self.X = x;
-        self.Y = y;
-    };
-    self.moveLeft = function () {
-        if (self.X > 0) {
-            self.moveTo(self.X - speed, self.Y);
-        }
-    };
-    self.moveRight = function () {
-        if (self.X + self.width < spec.width) {
-            self.moveTo(self.X + speed, self.Y);
-        }
-    };
-
-    self.update = function () {
-        var remainder = 0;
-        if (this.isJumping) {
-            if (this.Y > spec.height * 0.4) {
-                this.moveTo(this.X, this.Y - this.jumpSpeed);
-            } else {
-                remainder = this.jumpSpeed;
-            }
-
-            this.jumpSpeed--;
-            if (this.jumpSpeed === 0) {
-                this.isJumping = false;
-                this.isFalling = true;
-                this.fallSpeed = 1;
-            }
-        }
-
-        if (this.isFalling) {
-            if (this.Y < spec.height - this.height) {
-                this.moveTo(this.X, this.Y + this.fallSpeed);
-                this.fallSpeed++;
-            } else {
-                this.checkEndGame();
-                this.fallStop();
-            }
-        }
-
-        return remainder;
+        data.collectDataAsync("Player", "Agility", agility);
     };
 
     self.draw = function () {
         try {
-            spec.context().drawImage(
+            board.context().drawImage(
                 self,
                 0,
                 self.height * self.actualFrame,
@@ -115,18 +62,24 @@
         }
     };
 
-    self.checkEndGame = function () {
+    self.moveTo = function (x, y) {
+        self.X = x;
+        self.Y = y;
     };
 
-    self.fallStop = function () {
-        self.isFalling = false;
-        self.fallSpeed = 0;
-    };
+    self.pt = new Tangle($('#player')[0], {
+        initialize: function () {
+            this.playerAgility = "normally";
+        },
+        update: function () {
+            self.agility(this.playerAgility);
+        }
+    });
 
     self.reset = function () {
         self.moveTo(
-            ~~((spec.width - self.width) / 2),
-            ~~((spec.height - self.height) / 2));
+            ~~((board.width - self.width) / 2),
+            ~~((board.height - self.height) / 2));
         self.isJumping = false;
         self.isFalling = false;
         self.jump(17);
@@ -134,14 +87,60 @@
 
     self.reset();
     return self;
-})(board);
-
-var pt;
-pt = new Tangle($('#player')[0], {
-    initialize: function () {
-        this.playerAgility = "normally";
-    },
-    update: function () {
-        player.agility(this.playerAgility);
-    }
 });
+
+//    self.isJumping = false;
+//    self.isFalling = false;
+//    self.jumpSpeed = 0;
+//    self.fallSpeed = 0;
+
+//    self.moveLeft = function () {
+//        if (self.X > 0) {
+//            self.moveTo(self.X - speed, self.Y);
+//        }
+//    };
+//    self.moveRight = function () {
+//        if (self.X + self.width < spec.width) {
+//            self.moveTo(self.X + speed, self.Y);
+//        }
+//    };
+
+//    self.update = function () {
+//        var remainder = 0;
+//        if (this.isJumping) {
+//            if (this.Y > spec.height * 0.4) {
+//                this.moveTo(this.X, this.Y - this.jumpSpeed);
+//            } else {
+//                remainder = this.jumpSpeed;
+//            }
+
+//            this.jumpSpeed--;
+//            if (this.jumpSpeed === 0) {
+//                this.isJumping = false;
+//                this.isFalling = true;
+//                this.fallSpeed = 1;
+//            }
+//        }
+
+//        if (this.isFalling) {
+//            if (this.Y < spec.height - this.height) {
+//                this.moveTo(this.X, this.Y + this.fallSpeed);
+//                this.fallSpeed++;
+//            } else {
+//                this.checkEndGame();
+//                this.fallStop();
+//            }
+//        }
+
+//        return remainder;
+//    };
+
+//    self.checkEndGame = function () {
+//    };
+
+//    self.fallStop = function () {
+//        self.isFalling = false;
+//        self.fallSpeed = 0;
+//    };
+
+//});
