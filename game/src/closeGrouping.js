@@ -1,4 +1,5 @@
-﻿define({
+﻿/*jshint bitwise: false*/
+define({
     generateX: function (boardWidth, platform) {
         var seed = Math.random();
         var offset = platform.width * seed;

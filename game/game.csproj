@@ -122,7 +122,9 @@
     <Content Include="src\data.js" />
     <Content Include="src\randomGrouping.js" />
     <Content Include="src\tangle-extensions.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Modules\Bootstrapper.cs" />

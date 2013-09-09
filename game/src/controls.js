@@ -1,13 +1,12 @@
-﻿"use strict";
-var cs = (function () {
+﻿define(["board", "data", "player"], function (board, data, player) {
+    "use strict";
 
-    var controls, controlSystem = {};
+    var Tangle = window.Tangle, controls, controlSystem = {};
 
     controls = {
         left: function () { player.moveLeft(board); },
         right: function () { player.moveRight(board); },
         togglePlay: function () {
-            toggleGameLoop();
         },
         teardown: function () {
         }
@@ -21,7 +20,7 @@ var cs = (function () {
         var toggle;
         var toMouse;
         var toKeyboard;
-        
+
         controlSystem.control = Object.create(controls);
 
         createWith = function (ctor) {
@@ -41,10 +40,10 @@ var cs = (function () {
 
         toKeyboard();
 
-        return function (controlType, player, canvas) {
+        return function (controlType, $player, canvas) {
             if (currentControls !== controlType) {
-                _gaq.push(['_trackEvent', 'Adjust', 'Controls', 'ControlType', controlType]);
-                hero = player;
+                data.collectDataAsync("Controls", "ControlType", controlType);
+                hero = $player;
                 cvs = canvas;
                 toggle();
             }
@@ -117,16 +116,15 @@ var cs = (function () {
         return self;
     }
 
-    return controlSystem;
-})();
+    controlSystem.ct = new Tangle($("#controls")[0], {
+        initialize: function () {
+            this.controlType = true;
+        },
+        update: function () {
+            this.controlInstructions = this.controlType;
+            controlSystem.toggleControls(this.controlType, player, board.canvas());
+        }
+    });
 
-var ct;
-ct = new Tangle($("#controls")[0], {
-    initialize: function () {
-        this.controlType = true;
-    },
-    update: function () {
-        this.controlInstructions = this.controlType;
-        cs.toggleControls(this.controlType, player, board.canvas());
-    }
+    return controlSystem;
 });

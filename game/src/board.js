@@ -1,6 +1,11 @@
 ﻿define(["data"], function (data) {
     "use strict";
-    var Tangle = window.Tangle, defaultWidth = 320, cvs, ctx, lazyCanvas, lazyContext;
+    var Tangle = window.Tangle
+        , defaultWidth = 320
+        , cvs
+        , ctx
+        , lazyCanvas
+        , lazyContext;
     var self = {
         width: defaultWidth,
         height: 500,
@@ -52,9 +57,6 @@
 
     self.canvas = lazyCanvas;
     self.context = lazyContext;
-
-    //cvs = lazyCanvas();
-    //ctx = lazyContext();
 
     self.bt = new Tangle($('#board')[0], {
         initialize: function () {

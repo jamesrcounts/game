@@ -1,13 +1,13 @@
 ﻿/*jshint bitwise: false*/
 define(["board", "data"], function (board, data) {
     "use strict";
-    var Tangle = window.Tangle, defaultSpeed = 5, self = new Image(), speed;
-    self.X = 0;
-    self.Y = 0;
-    self.actualFrame = 0;
+    var Tangle = window.Tangle
+        , defaultSpeed = 5
+        , self = new Image()
+        , speed;
+
     self.frames = 1;
     self.height = 95;
-    self.interval = 0;
     self.src = "img/angel.png";
     self.width = 65;
 
@@ -26,6 +26,9 @@ define(["board", "data"], function (board, data) {
 
         speed = defaultSpeed * factor;
         data.collectDataAsync("Player", "Agility", agility);
+    };
+
+    self.checkEndGame = function () {
     };
 
     self.draw = function () {
@@ -54,11 +57,28 @@ define(["board", "data"], function (board, data) {
         self.interval++;
     };
 
+    self.fallStop = function () {
+        self.isFalling = false;
+        self.fallSpeed = 0;
+    };
+
     self.jump = function (deltaY) {
         deltaY = Math.floor(deltaY);
         if (!self.isJumping && !self.isFalling) {
             self.isJumping = true;
             self.jumpSpeed = deltaY;
+        }
+    };
+
+    self.moveLeft = function () {
+        if (self.X > 0) {
+            self.moveTo(self.X - speed, self.Y);
+        }
+    };
+
+    self.moveRight = function () {
+        if (self.X + self.width < board.width) {
+            self.moveTo(self.X + speed, self.Y);
         }
     };
 
@@ -77,6 +97,8 @@ define(["board", "data"], function (board, data) {
     });
 
     self.reset = function () {
+        self.actualFrame = 0;
+        self.interval = 0;
         self.moveTo(
             ~~((board.width - self.width) / 2),
             ~~((board.height - self.height) / 2));
@@ -85,62 +107,36 @@ define(["board", "data"], function (board, data) {
         self.jump(17);
     };
 
+    self.update = function () {
+        var remainder = 0;
+        if (this.isJumping) {
+            if (this.Y > board.height * 0.4) {
+                this.moveTo(this.X, this.Y - this.jumpSpeed);
+            } else {
+                remainder = this.jumpSpeed;
+            }
+
+            this.jumpSpeed--;
+            if (this.jumpSpeed === 0) {
+                this.isJumping = false;
+                this.isFalling = true;
+                this.fallSpeed = 1;
+            }
+        }
+
+        if (this.isFalling) {
+            if (this.Y < board.height - this.height) {
+                this.moveTo(this.X, this.Y + this.fallSpeed);
+                this.fallSpeed++;
+            } else {
+                this.checkEndGame();
+                this.fallStop();
+            }
+        }
+
+        return remainder;
+    };
+
     self.reset();
     return self;
 });
-
-//    self.isJumping = false;
-//    self.isFalling = false;
-//    self.jumpSpeed = 0;
-//    self.fallSpeed = 0;
-
-//    self.moveLeft = function () {
-//        if (self.X > 0) {
-//            self.moveTo(self.X - speed, self.Y);
-//        }
-//    };
-//    self.moveRight = function () {
-//        if (self.X + self.width < spec.width) {
-//            self.moveTo(self.X + speed, self.Y);
-//        }
-//    };
-
-//    self.update = function () {
-//        var remainder = 0;
-//        if (this.isJumping) {
-//            if (this.Y > spec.height * 0.4) {
-//                this.moveTo(this.X, this.Y - this.jumpSpeed);
-//            } else {
-//                remainder = this.jumpSpeed;
-//            }
-
-//            this.jumpSpeed--;
-//            if (this.jumpSpeed === 0) {
-//                this.isJumping = false;
-//                this.isFalling = true;
-//                this.fallSpeed = 1;
-//            }
-//        }
-
-//        if (this.isFalling) {
-//            if (this.Y < spec.height - this.height) {
-//                this.moveTo(this.X, this.Y + this.fallSpeed);
-//                this.fallSpeed++;
-//            } else {
-//                this.checkEndGame();
-//                this.fallStop();
-//            }
-//        }
-
-//        return remainder;
-//    };
-
-//    self.checkEndGame = function () {
-//    };
-
-//    self.fallStop = function () {
-//        self.isFalling = false;
-//        self.fallSpeed = 0;
-//    };
-
-//});

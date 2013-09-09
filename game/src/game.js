@@ -1,49 +1,52 @@
 ﻿require(
-    ["data", "board", "clouds", "platforms", "player"],
-    function (data, board, clouds, platforms, player) {
+    ["data", "board", "clouds", "controls", "platforms", "player", "points"],
+    function (data, board, clouds, controls, platforms, player, points) {
         "use strict";
-        var createjs = window.createjs
+        var checkCollisions
+            , createjs = window.createjs
             , drawAllPieces
+            , endGame
             , gameLoop
             , toggleGameLoop
             , updateEachPiece
             , updatePieces
             , updateView;
-        //var startGame;
-        //var checkCollisions;
-        //var endGame;
 
-        //player.checkEndGame = function () {
-        //    if (points.value !== 0) {
-        //        endGame();
-        //    }
-        //};
+        controls.control.togglePlay = function () {
+            toggleGameLoop();
+        };
 
-        //checkCollisions = function (hero, platforms) {
-        //    for (var i = 0; i < platforms.count; i++) {
-        //        if (hero.isFalling &&
-        //            hero.X < platforms[i].x + platforms[i].width &&
-        //            hero.X + hero.width > platforms[i].x &&
-        //            hero.Y + hero.height > platforms[i].y &&
-        //            hero.Y + hero.height < platforms[i].y + platforms[i].height) {
-        //            platforms[i].onCollide(hero);
-        //        }
-        //    }
-        //};
+        player.checkEndGame = function () {
+            if (points.value !== 0) {
+                endGame();
+            }
+        };
+
+        checkCollisions = function ($player, $platforms) {
+            for (var i = 0; i < $platforms.count; i++) {
+                if ($player.isFalling &&
+                    $player.X < $platforms[i].x + $platforms[i].width &&
+                    $player.X + $player.width > $platforms[i].x &&
+                    $player.Y + $player.height > $platforms[i].y &&
+                    $player.Y + $player.height < $platforms[i].y + $platforms[i].height) {
+                    $platforms[i].onCollide($player);
+                }
+            }
+        };
 
         updateEachPiece = function (
             $clouds
           , $platforms
-            //,hero
-            //    , clouds
+          , $player
+          , $points
         ) {
-            var speed = 2;
+            var speed;
 
-            //    checkCollisions(hero, platforms);
-            //    speed = hero.update();
+            checkCollisions($player, $platforms);
+            speed = $player.update();
             $clouds.update(speed * 0.5);
             $platforms.update(speed);
-            //    points.update(hero.jumpSpeed);
+            $points.update($player, $player.jumpSpeed);
         };
 
         updatePieces = updateEachPiece;
@@ -60,15 +63,15 @@
             updatePieces(
             clouds
             , platforms
-            //, player
-            //, points
+            , player
+            , points
             );
             updateView(
                 board
                 , clouds
                 , platforms
                 , player
-                //, points
+                , points
             );
         };
 
@@ -96,35 +99,36 @@
             resume();
         })(function () { gameLoop(); });
 
-        //endGame = function () {
-        //    var ctx = board.context(), tp = cs.control.togglePlay;
-        //    cs.control.togglePlay = function () {
-        //        resetAll(player, points, clouds, platforms);
-        //        updatePieces = updateEachPiece;
-        //        updateView = drawAllPieces;
-        //        updateView(board, clouds, player, platforms, points);
-        //        _gaq.push(['_trackEvent', 'Game', 'Reset']);
-        //        cs.control.togglePlay = tp;
-        //    };
+        endGame = function () {
+            var ctx = board.context(), tp = controls.control.togglePlay;
+            controls.control.togglePlay = function () {
+                resetAll(player, points, clouds, platforms);
+                updatePieces = updateEachPiece;
+                updateView = drawAllPieces;
+                updateView(board, clouds, player, platforms, points);
+                data.collectDataAsync("Game", "Reset", "Reset");
+                controls.control.togglePlay = tp;
+            };
 
-        //    updatePieces = function () {
-        //    };
-        //    updateView = function () {
-        //        board.draw();
-        //        ctx.fillStyle = "Black";
-        //        ctx.font = "10pt Arial";
-        //        ctx.fillText("GAME OVER", (board.width / 2) - 60, (board.height / 2) - 50);
-        //        ctx.fillText("YOUR RESULT:" + points.value, board.width / 2 - 60, board.height / 2 - 30);
-        //    };
+            updatePieces = function () {
+            };
 
-        //    toggleGameLoop();
-        //    _gaq.push(['_trackEvent', 'Game', 'Play', 'Score', points.value]);
-        //};
+            updateView = function () {
+                board.draw();
+                ctx.fillStyle = "Black";
+                ctx.font = "10pt Arial";
+                ctx.fillText("GAME OVER", (board.width / 2) - 60, (board.height / 2) - 50);
+                ctx.fillText("YOUR RESULT:" + points.value, board.width / 2 - 60, board.height / 2 - 30);
+            };
 
-        //function resetAll() {
-        //    var i, l = arguments.length;
-        //    for (i = 0; i < l; i++) {
-        //        arguments[i].reset();
-        //    }
-        //}
+            toggleGameLoop();
+            data.collectDataAsync("Game", "Score", points.value);
+        };
+
+        function resetAll() {
+            var i, l = arguments.length;
+            for (i = 0; i < l; i++) {
+                arguments[i].reset();
+            }
+        }
     });

@@ -1,6 +1,6 @@
-﻿"use strict";
-
-(function () {
+﻿(function () {
+    "use strict";
+    var Tangle = window.Tangle, BVTouchable = window.BVTouchable, Element = window.Element;
     Tangle.classes.CarouselText = {
         initialize: function (element, options, tangle, variable) {
             var carousel = this;
@@ -42,9 +42,9 @@
 
         initializeDrag: function () {
             this.isDragging = false;
-// ReSharper disable InconsistentNaming
+            // ReSharper disable InconsistentNaming
             return new BVTouchable(this.element, this);
-// ReSharper restore InconsistentNaming
+            // ReSharper restore InconsistentNaming
         },
 
         initializeHelp: function () {
