@@ -158,20 +158,26 @@ define(
             }
         };
 
-        self.plt = new Tangle($('#platforms')[0], {
-            initialize: function () {
-                this.platformsBounce = "canvas";
-                this.platformsCount = 7;
-                this.platformsMove = false;
-                this.platformsGrouping = "mostly-centered";
-            },
-            update: function () {
-                self.bounce(this.platformsBounce);
-                self.count = this.platformsCount;
-                self.move(this.platformsMove);
-                self.grouping(this.platformsGrouping);
+        self.plt = (function () {
+            var t = null, e = $('#platforms')[0];
+            if (e) {
+                t = new Tangle(e, {
+                    initialize: function () {
+                        this.platformsBounce = "canvas";
+                        this.platformsCount = 7;
+                        this.platformsMove = false;
+                        this.platformsGrouping = "mostly-centered";
+                    },
+                    update: function () {
+                        self.bounce(this.platformsBounce);
+                        self.count = this.platformsCount;
+                        self.move(this.platformsMove);
+                        self.grouping(this.platformsGrouping);
+                    }
+                });
             }
-        });
+            return t;
+        })();
         self.reset();
         return self;
     });

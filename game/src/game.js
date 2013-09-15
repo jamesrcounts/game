@@ -1,9 +1,8 @@
-﻿require(
-    ["data", "board", "clouds", "controls", "platforms", "player", "points"],
-    function (data, board, clouds, controls, platforms, player, points) {
+﻿define(
+    ["easeljs", "data", "board", "clouds", "controls", "platforms", "player", "points"],
+    function (createjs, data, board, clouds, controls, platforms, player, points) {
         "use strict";
         var checkCollisions
-            , createjs = window.createjs
             , drawAllPieces
             , endGame
             , gameLoop
@@ -96,7 +95,7 @@
                 toggleGameLoop = resume;
             };
 
-            resume();
+            // resume();
         })(function () { gameLoop(); });
 
         endGame = function () {
@@ -131,4 +130,6 @@
                 arguments[i].reset();
             }
         }
+
+        return {};
     });

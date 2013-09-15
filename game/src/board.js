@@ -58,14 +58,21 @@
     self.canvas = lazyCanvas;
     self.context = lazyContext;
 
-    self.bt = new Tangle($('#board')[0], {
-        initialize: function () {
-            this.boardSize = "small";
-        },
-        update: function () {
-            self.size(this.boardSize);
+    self.bt = (function () {
+        var e = $('#board')[0], bt = null;
+
+        if (e) {
+            bt = new Tangle(e, {
+                initialize: function () {
+                    this.boardSize = "small";
+                },
+                update: function () {
+                    self.size(this.boardSize);
+                }
+            });
         }
-    });
+        return bt;
+    })();
 
     return self;
 });

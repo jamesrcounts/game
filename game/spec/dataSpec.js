@@ -1,4 +1,4 @@
-define(["src/data"], function (data) {
+define(["data"], function (data) {
     var expected = {
         partitionKey: "fa404b90-2b8a-41e4-a3c6-e232bb7c9bfa",
         createDate: "2013-09-02T22:31:41.918Z",

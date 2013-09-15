@@ -87,14 +87,20 @@ define(["board", "data"], function (board, data) {
         self.Y = y;
     };
 
-    self.pt = new Tangle($('#player')[0], {
-        initialize: function () {
-            this.playerAgility = "normally";
-        },
-        update: function () {
-            self.agility(this.playerAgility);
+    self.pt = (function () {
+        var e = $('#player')[0], t = null;
+        if (e) {
+            t = new Tangle(e, {
+                initialize: function () {
+                    this.playerAgility = "normally";
+                },
+                update: function () {
+                    self.agility(this.playerAgility);
+                }
+            });
         }
-    });
+        return t;
+    })();
 
     self.reset = function () {
         self.actualFrame = 0;
