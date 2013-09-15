@@ -7,6 +7,7 @@
             , endGame
             , gameLoop
             , toggleGameLoop
+            , self = {}
             , updateEachPiece
             , updatePieces
             , updateView;
@@ -74,7 +75,7 @@
             );
         };
 
-        (function (u) {
+        self.start = (function (u) {
             var halt, resume, startGame;
             createjs.Ticker.setFPS(60);
             createjs.Ticker.useRAF = true;
@@ -95,7 +96,7 @@
                 toggleGameLoop = resume;
             };
 
-            // resume();
+            return resume;
         })(function () { gameLoop(); });
 
         endGame = function () {
@@ -131,5 +132,5 @@
             }
         }
 
-        return {};
+        return self;
     });

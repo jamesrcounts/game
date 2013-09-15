@@ -122,6 +122,7 @@
     <Content Include="spec\dataSpec.js" />
     <Content Include="src\data.js" />
     <Content Include="src\randomGrouping.js" />
+    <Content Include="src\runner.js" />
     <Content Include="src\tangle-extensions.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
