@@ -83,6 +83,7 @@
   <ItemGroup>
     <Content Include="img\angel.png" />
     <Content Include="lib\requirejs-2.1.8\require.js" />
+    <Content Include="spec\specRunner.js" />
     <Content Include="src\board.js" />
     <Content Include="src\closeGrouping.js" />
     <Content Include="src\clouds.js" />
@@ -117,8 +118,7 @@
     <Content Include="src\player.js" />
     <Content Include="src\points.js" />
     <Content Include="SpecRunner.html" />
-    <Content Include="spec\DataCollectionSpec.js" />
-    <Content Include="spec\SpecHelper.js" />
+    <Content Include="spec\dataSpec.js" />
     <Content Include="src\data.js" />
     <Content Include="src\randomGrouping.js" />
     <Content Include="src\tangle-extensions.js" />
