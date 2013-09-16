@@ -55,6 +55,11 @@
         data.collectDataAsync("Board", "Size", size);
     };
 
+    self.addSettingsTo = function (target) {
+        target.board = { width: this.width };
+        return target;
+    };
+
     self.canvas = lazyCanvas;
     self.context = lazyContext;
 

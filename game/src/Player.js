@@ -12,9 +12,9 @@ define(["board", "data"], function (board, data) {
     self.width = 65;
 
     speed = defaultSpeed;
+    var factor;
 
     self.agility = function (agility) {
-        var factor;
         if (/slowly/i.test(agility)) {
             factor = 1 / 3;
         }
@@ -27,6 +27,13 @@ define(["board", "data"], function (board, data) {
         speed = defaultSpeed * factor;
         data.collectDataAsync("Player", "Agility", agility);
     };
+
+    self.addSettingsTo = function (target) {
+        target.player = {
+            agility: factor
+        };
+        return target;
+    }
 
     self.checkEndGame = function () {
     };

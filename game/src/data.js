@@ -2,7 +2,9 @@
 define(function () {
     "use strict";
     var g = (function () {
-        var self = {};
+        var self = {
+            addSettingsTo: function () { }
+        };
 
         var setSessionCookie = function (name, value) {
             var cookie = name + "=" + value;

@@ -2,12 +2,13 @@
     ["easeljs", "data", "board", "clouds", "controls", "platforms", "player", "points"],
     function (createjs, data, board, clouds, controls, platforms, player, points) {
         "use strict";
-        var checkCollisions
+        var args = Array.prototype.slice.call(arguments)
+            , checkCollisions
             , drawAllPieces
             , endGame
             , gameLoop
             , toggleGameLoop
-            , self = {}
+            , self = { gamepieces: args.slice(1) }
             , updateEachPiece
             , updatePieces
             , updateView;
@@ -131,6 +132,16 @@
                 arguments[i].reset();
             }
         }
+
+        self.getSettings = function () {
+            var l = this.gamepieces.length
+            , settings = {};
+
+            for (var i = 0; i < l; i++) {
+                this.gamepieces[i].addSettingsTo(settings);
+            }
+            return settings;
+        };
 
         return self;
     });

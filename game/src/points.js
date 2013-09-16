@@ -1,6 +1,6 @@
 ﻿define(["board", "data"], function (board, data) {
     "use strict";
-    var self = { value: 0, threshold: 100 };
+    var self = { value: 0, threshold: 100, addSettingsTo: function () { } };
     var initialThreshold = self.threshold;
     self.update = function (player, deltaY) {
         var highBar = (board.height * 0.5);

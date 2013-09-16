@@ -11,6 +11,8 @@ define(
             , groupWith
             , position = 0;
         var self = [];
+        self.count = 7;
+        self.canMove = false;
 
         createPlatform = function (x, y, type) {
             var platform = { width: 70, height: 20 };
@@ -178,6 +180,16 @@ define(
             }
             return t;
         })();
+
+        self.addSettingsTo = function (target) {
+            target.platforms = {
+                bounce: factor,
+                count: this.count,
+                move: this.canMove,
+                grouping: this.groupingAlgorithm
+            };
+            return target;
+        }
         self.reset();
         return self;
     });
