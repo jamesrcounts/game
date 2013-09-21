@@ -189,7 +189,8 @@ define(
                 grouping: this.groupingAlgorithm
             };
             return target;
-        }
+        };
+
         self.reset();
         return self;
     });
