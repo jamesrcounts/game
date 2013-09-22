@@ -1,10 +1,14 @@
-﻿define(function () {
+﻿(function () {
     "use strict";
-    var Tangle = window.Tangle, BVTouchable = window.BVTouchable, Element = window.Element;
+    var BVTouchable = window.BVTouchable
+        , Element = window.Element
+        , Tangle = window.Tangle;
     Tangle.classes.CarouselText = {
         initialize: function (element, options, tangle, variable) {
             var carousel = this;
-            carousel.values = (options.values !== undefined) ? options.values.split(" ") : ["locked"];
+            carousel.values = (options.values !== undefined) ?
+                options.values.split(" ") :
+                ["locked"];
 
             element.onclick = function () {
                 var value = tangle.getValue(variable);
@@ -139,4 +143,4 @@
             }
         }
     };
-});
+})();

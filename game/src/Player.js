@@ -33,7 +33,7 @@ define(["board", "data"], function (board, data) {
             agility: factor
         };
         return target;
-    }
+    };
 
     self.checkEndGame = function () {
     };
