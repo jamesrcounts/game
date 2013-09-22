@@ -1,4 +1,4 @@
-﻿define(["data"], function (data) {
+﻿define(["jquery", "data"], function ($, data) {
     "use strict";
     var Tangle = window.Tangle
         , defaultWidth = 320
