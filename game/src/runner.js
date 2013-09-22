@@ -10,6 +10,6 @@
     }
 });
 
-require(["jquery", "game"], function (_, game) {
+require(["jquery", "tangle-extensions", "game"], function (_, __, game) {
     game.start();
 });

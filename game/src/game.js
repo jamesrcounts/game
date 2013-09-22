@@ -25,12 +25,17 @@
 
         checkCollisions = function ($player, $platforms) {
             for (var i = 0; i < $platforms.count; i++) {
+                var platform = $platforms[i];
+                if (!platform) {
+                    continue;
+                }
+
                 if ($player.isFalling &&
-                    $player.X < $platforms[i].x + $platforms[i].width &&
-                    $player.X + $player.width > $platforms[i].x &&
-                    $player.Y + $player.height > $platforms[i].y &&
-                    $player.Y + $player.height < $platforms[i].y + $platforms[i].height) {
-                    $platforms[i].onCollide($player);
+                    $player.X < platform.x + platform.width &&
+                    $player.X + $player.width > platform.x &&
+                    $player.Y + $player.height > platform.y &&
+                    $player.Y + $player.height < platform.y + platform.height) {
+                    platform.onCollide($player);
                 }
             }
         };

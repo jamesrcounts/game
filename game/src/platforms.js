@@ -132,7 +132,7 @@ define(
         self.update = function (deltaY) {
             if (this.count !== this.length) {
                 data.collectDataAsync("Platforms", "Count", this.count);
-                while (this.count !== this.length) {
+                while (this.count < this.length) {
                     this.pop();
                 }
                 this.reset();

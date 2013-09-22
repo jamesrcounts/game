@@ -1,4 +1,4 @@
-﻿(function () {
+﻿define(function () {
     "use strict";
     var Tangle = window.Tangle, BVTouchable = window.BVTouchable, Element = window.Element;
     Tangle.classes.CarouselText = {
@@ -139,4 +139,4 @@
             }
         }
     };
-})();
+});
