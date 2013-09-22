@@ -3,6 +3,7 @@ define(["board", "data"], function (board, data) {
     "use strict";
     var Tangle = window.Tangle
         , defaultSpeed = 5
+        , factor
         , self = new Image()
         , speed;
 
@@ -12,7 +13,6 @@ define(["board", "data"], function (board, data) {
     self.width = 65;
 
     speed = defaultSpeed;
-    var factor;
 
     self.agility = function (agility) {
         if (/slowly/i.test(agility)) {

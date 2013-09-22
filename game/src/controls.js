@@ -1,9 +1,11 @@
 ﻿define(["board", "data", "player"], function (board, data, player) {
     "use strict";
 
-    var Tangle = window.Tangle, controls, controlSystem = {
-        addSettingsTo: function () { }
-    };
+    var Tangle = window.Tangle
+        , controls
+        , controlSystem = {
+            addSettingsTo: function () { }
+        };
 
     controls = {
         left: function () { player.moveLeft(board); },
