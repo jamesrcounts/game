@@ -28,7 +28,7 @@ namespace Game.Modules
         /// <summary>
         /// The pool storage.
         /// </summary>
-        private readonly Stack<CloudTable> pool = new Stack<CloudTable>();
+        private readonly Dictionary<string, Stack<CloudTable>> pool = new Dictionary<string, Stack<CloudTable>>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// The pool lock
@@ -51,26 +51,37 @@ namespace Game.Modules
         }
 
         /// <summary>
-        /// Acquires a <see cref="CloudTableReference"/> instance.
+        /// Acquires a <see cref="CloudTableReference" /> instance.
         /// </summary>
-        /// <returns>A <see cref="CloudTableReference"/>.</returns>
-        public CloudTableReference Acquire()
+        /// <param name="tableName">Name of the table.</param>
+        /// <returns>
+        /// A <see cref="CloudTableReference" />.
+        /// </returns>
+        public CloudTableReference Acquire(string tableName)
         {
-            return this.Acquire(this.pool) ?? new CloudTableReference();
+            return this.Acquire(this.pool, tableName) ?? new CloudTableReference(tableName);
         }
 
         /// <summary>
-        /// Acquire a <see cref="CloudTableReference"/> using the pool of specified instances.
+        /// Acquire a <see cref="CloudTableReference" /> using the pool of specified instances.
         /// </summary>
         /// <param name="instances">The instances.</param>
-        /// <returns>A <see cref="CloudTableReference"/> if any <see cref="CloudTable"/>s are available, otherwise null.</returns>
-        private CloudTableReference Acquire(Stack<CloudTable> instances)
+        /// <param name="tableName">Name of the table.</param>
+        /// <returns>
+        /// A <see cref="CloudTableReference" /> if any <see cref="CloudTable" />s are available, otherwise null.
+        /// </returns>
+        private CloudTableReference Acquire(Dictionary<string, Stack<CloudTable>> instances, string tableName)
         {
             lock (this.poolLock)
             {
-                if (0 < instances.Count)
+                if (!instances.ContainsKey(tableName))
                 {
-                    return new CloudTableReference(instances.Pop());
+                    instances[tableName] = new Stack<CloudTable>();
+                }
+
+                if (0 < instances[tableName].Count)
+                {
+                    return new CloudTableReference(instances[tableName].Pop(), tableName);
                 }
             }
 
@@ -81,11 +92,12 @@ namespace Game.Modules
         /// Releases the specified instance to the pool.
         /// </summary>
         /// <param name="instance">The instance.</param>
-        private void Release(CloudTableReference instance)
+        /// <param name="tableName">Name of the table.</param>
+        private void Release(CloudTableReference instance, string tableName)
         {
             lock (this.poolLock)
             {
-                this.pool.Push(instance.CloudTable);
+                this.pool[tableName].Push(instance.CloudTable);
             }
         }
 
@@ -100,6 +112,11 @@ namespace Game.Modules
             private static readonly ConnectionStringSettings ConnectionInfo = ConfigurationManager.ConnectionStrings["StorageConnectionString"];
 
             /// <summary>
+            /// The table name
+            /// </summary>
+            private readonly string tableName;
+
+            /// <summary>
             /// The cloud table.
             /// </summary>
             private CloudTable cloudTable;
@@ -110,24 +127,28 @@ namespace Game.Modules
             private bool disposed;
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="CloudTableReference"/> class.
+            /// Initializes a new instance of the <see cref="CloudTableReference" /> class.
             /// </summary>
-            public CloudTableReference()
+            /// <param name="tableName">Name of the table.</param>
+            public CloudTableReference(string tableName)
             {
+                this.tableName = tableName;
                 var table = CloudStorageAccount.Parse(ConnectionInfo.ConnectionString)
                                                .CreateCloudTableClient()
-                                               .GetTableReference("GameEvents");
+                                               .GetTableReference(tableName);
                 table.CreateIfNotExists();
                 this.cloudTable = table;
             }
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="CloudTableReference"/> class.
+            /// Initializes a new instance of the <see cref="CloudTableReference" /> class.
             /// </summary>
             /// <param name="cloudTable">The cloud table.</param>
-            public CloudTableReference(CloudTable cloudTable)
+            /// <param name="tableName">Name of the table.</param>
+            public CloudTableReference(CloudTable cloudTable, string tableName)
             {
                 this.cloudTable = cloudTable;
+                this.tableName = tableName;
             }
 
             /// <summary>
@@ -174,7 +195,7 @@ namespace Game.Modules
                 {
                     if (this.cloudTable != null)
                     {
-                        Pool.Release(this);
+                        Pool.Release(this, this.tableName);
                         this.cloudTable = null;
                     }
                 }

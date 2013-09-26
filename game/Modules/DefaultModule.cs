@@ -29,9 +29,14 @@ namespace Game.Modules
         {
             this.Get["/"] = _ => this.View["index"];
             this.Get["/SpecRunner"] = _ => this.View["SpecRunner"];
-            this.Post["/Collect"] = delegate
+            this.Post["/Collect"] = arg =>
                 {
                     Task.Factory.StartNew(() => this.Save());
+                    return HttpStatusCode.OK;
+                };
+            this.Post["/Store"] = arg =>
+                {
+                    Task.Factory.StartNew(() => this.SaveSettings());
                     return HttpStatusCode.OK;
                 };
         }
@@ -46,11 +51,22 @@ namespace Game.Modules
         {
             var dataPoint = this.Bind<GameEvent>();
             var operation = TableOperation.Insert(dataPoint);
-            using (var r = TableReferencePool.Pool.Acquire())
+            using (var r = TableReferencePool.Pool.Acquire("GameEvents"))
             {
                 r.CloudTable.Execute(operation);
             }
 
+            return HttpStatusCode.OK;
+        }
+
+        private Response SaveSettings()
+        {
+            var settings = this.Bind<GameSettings>();
+            var operation = TableOperation.Insert(settings);
+            using (var r = TableReferencePool.Pool.Acquire("GameSettings"))
+            {
+                r.CloudTable.Execute(operation);
+            }
             return HttpStatusCode.OK;
         }
     }

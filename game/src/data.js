@@ -1,6 +1,8 @@
 ﻿/*jshint bitwise: false*/
 define(function () {
     "use strict";
+    var Hashes = window.Hashes;
+
     var g = (function () {
         var self = {
             addSettingsTo: function () { }
@@ -66,6 +68,13 @@ define(function () {
             $.post("/Collect", result);
 
             return result;
+        };
+
+        self.saveSettingsAsync = function ($settings) {
+            var algorithm = new Hashes.SHA256();
+            $settings.rowKey = algorithm.hex(JSON.stringify($settings));
+            $.post("/Store", $settings);
+            return $settings;
         };
 
         return self;

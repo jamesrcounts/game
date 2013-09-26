@@ -7,6 +7,29 @@ define(["data"], function (data) {
         value: "flubber"
     };
 
+    describe("sending game settings", function () {
+        it("should return the settings it sent", function () {
+            var sent, sending;
+            sending = {
+                "board": {
+                    "width": 320
+                },
+                "platforms": {
+                    "bounce": 2,
+                    "count": 7,
+                    "move": false,
+                    "grouping": "anywhere"
+                },
+                "player": {
+                    "agility": 3
+                }
+            };
+            sent = data.saveSettingsAsync(sending);
+            expect(sent).toEqual(sending);
+            expect(sent.rowKey).toEqual("c32a3d825df6bd7bfc6fd7c7daf2da837dd98281e972632cda7e41a8e4f12228");
+        });
+    });
+
     describe("the data model", function () {
         it("should generate uuids", function () {
             var uuid = data.uuid();
