@@ -1,55 +1,50 @@
-﻿namespace Game.Modules
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="GameSettings.cs" company="Jim Counts">
+//     Copyright (c) Jim Counts 2013. All rights reserved.
+// </copyright>
+// <summary>
+//   Defines the GameSettings type.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace Game.Modules
 {
-    using System.IO;
-    using System.Linq;
-    using System.Runtime.Serialization.Formatters.Binary;
-    using System.Security.Cryptography;
     using Microsoft.WindowsAzure.Storage.Table;
+
+    // ReSharper disable UnusedMember.Global
+    // ReSharper disable ClassNeverInstantiated.Global
 
     /// <summary>
     /// Game settings
     /// </summary>
     public class GameSettings : TableEntity
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameSettings"/> class.
+        /// </summary>
         public GameSettings()
         {
-            this.PartitionKey = "1";
+            this.PartitionKey = "0.0.1";
+            this.StoreCount = 1;
         }
 
         /// <summary>
-        /// Gets or sets the board settings.
+        /// Gets or sets the settings.
         /// </summary>
         /// <value>
-        /// The board.
+        /// The data.
         /// </value>
-        public Board Board { get; set; }
+        public string Settings { get; set; }
 
         /// <summary>
-        /// Gets or sets the platforms settings
+        /// Gets or sets the number of times these settings have been stored.
         /// </summary>
         /// <value>
-        /// The platforms.
+        /// The store count.
         /// </value>
-        public Platforms Platforms { get; set; }
-
-        /// <summary>
-        /// Gets or sets the player settings.
-        /// </summary>
-        /// <value>
-        /// The player.
-        /// </value>
-        public Player Player { get; set; }
-
-        public static string GetRowKey(GameSettings gameSettings)
-        {
-            using (var algorithm = new SHA256Managed())
-            using (var ms = new MemoryStream())
-            {
-                var formatter = new BinaryFormatter();
-                formatter.Serialize(ms, gameSettings);
-                var hash = algorithm.ComputeHash(ms.ToArray());
-                return hash.Aggregate(string.Empty, (s, b) => s + b.ToString("X2"));
-            }
-        }
+        public long StoreCount { get; set; }
     }
+
+    // ReSharper restore UnusedMember.Global
+    // ReSharper restore ClassNeverInstantiated.Global
 }

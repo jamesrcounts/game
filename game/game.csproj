@@ -135,13 +135,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\Board.cs" />
     <Compile Include="Modules\Bootstrapper.cs" />
     <Compile Include="Modules\GameEvent.cs" />
     <Compile Include="Modules\DefaultModule.cs" />
     <Compile Include="Modules\GameSettings.cs" />
-    <Compile Include="Modules\Platforms.cs" />
-    <Compile Include="Modules\Player.cs" />
     <Compile Include="Modules\TableReferencePool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

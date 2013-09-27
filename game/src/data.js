@@ -71,10 +71,16 @@ define(function () {
         };
 
         self.saveSettingsAsync = function ($settings) {
-            var algorithm = new Hashes.SHA256();
-            $settings.rowKey = algorithm.hex(JSON.stringify($settings));
-            $.post("/Store", $settings);
-            return $settings;
+            var entity = {}
+                , algorithm = new Hashes.SHA256()
+                , data = JSON.stringify($settings);
+
+            entity.rowKey = algorithm.hex(data);
+            entity.settings = data;
+
+            $.post("/Store", entity);
+
+            return entity;
         };
 
         return self;

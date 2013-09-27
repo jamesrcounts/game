@@ -9,7 +9,7 @@ define(["data"], function (data) {
 
     describe("sending game settings", function () {
         it("should return the settings it sent", function () {
-            var sent, sending;
+            var entity, sent, sending;
             sending = {
                 "board": {
                     "width": 320
@@ -24,9 +24,14 @@ define(["data"], function (data) {
                     "agility": 3
                 }
             };
+
             sent = data.saveSettingsAsync(sending);
-            expect(sent).toEqual(sending);
-            expect(sent.rowKey).toEqual("c32a3d825df6bd7bfc6fd7c7daf2da837dd98281e972632cda7e41a8e4f12228");
+
+            entity = {
+                rowKey: 'c32a3d825df6bd7bfc6fd7c7daf2da837dd98281e972632cda7e41a8e4f12228',
+                settings: '{"board":{"width":320},"platforms":{"bounce":2,"count":7,"move":false,"grouping":"anywhere"},"player":{"agility":3}}'
+            };
+            expect(sent).toEqual(entity);
         });
     });
 

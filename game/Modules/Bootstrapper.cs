@@ -16,8 +16,6 @@ namespace Game.Modules
     /// </summary>
     // ReSharper disable UnusedMember.Global
     public class Bootstrapper : DefaultNancyBootstrapper
-
-    // ReSharper restore UnusedMember.Global
     {
         /// <summary>
         /// Lets Nancy know about the static files.
@@ -40,4 +38,6 @@ namespace Game.Modules
                 Nancy.Conventions.StaticContentConventionBuilder.AddDirectory("/spec"));
         }
     }
+
+    // ReSharper restore UnusedMember.Global
 }
