@@ -5,7 +5,8 @@
         var initialThreshold, self = {
             value: 0,
             threshold: 100,
-            addSettingsTo: function () { }
+            addSettingsTo: function () { },
+            applySettings: function () { }
         };
 
         initialThreshold = self.threshold;

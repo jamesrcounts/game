@@ -4,7 +4,8 @@
     var Tangle = window.Tangle
         , controls
         , controlSystem = {
-            addSettingsTo: function () { }
+            addSettingsTo: function () { },
+            applySettings: function () { }
         };
 
     controls = {

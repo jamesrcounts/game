@@ -24,8 +24,19 @@ namespace Game.Modules
         /// </summary>
         public GameSettings()
         {
-            this.PartitionKey = "0.0.1";
+            this.PartitionKey = Version;
             this.StoreCount = 1;
+        }
+
+        /// <summary>
+        /// Gets the partition version.
+        /// </summary>
+        /// <value>
+        /// The version.
+        /// </value>
+        public static string Version
+        {
+            get { return "0.0.1"; }
         }
 
         /// <summary>

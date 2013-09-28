@@ -26,8 +26,11 @@ namespace Game.Modules
         /// </summary>
         public DefaultModule()
         {
-            this.Get["/"] = _ => this.View["index"];
+            this.Get["/Load"] = _ => this.Load();
             this.Get["/SpecRunner"] = _ => this.View["SpecRunner"];
+            this.Get[@"/(.*)"] = _ => this.View["index"];
+            this.Get[@"/"] = _ => this.View["index"];
+
             this.Post["/Collect"] = arg =>
                 {
                     Task.Factory.StartNew(() => this.Save());
@@ -38,6 +41,21 @@ namespace Game.Modules
                     Task.Factory.StartNew(() => this.SaveSettings());
                     return HttpStatusCode.OK;
                 };
+        }
+
+        /// <summary>
+        /// Loads settings.
+        /// </summary>
+        /// <returns>The requested settings.</returns>
+        private GameSettings Load()
+        {
+            var rowKey = this.Request.Query["rowKey"];
+            var retrieve = TableOperation.Retrieve<GameSettings>(GameSettings.Version, rowKey);
+            using (var table = TableReferencePool.Pool.Acquire(typeof(GameSettings).Name))
+            {
+                var result = (GameSettings)table.CloudTable.Execute(retrieve).Result;
+                return result;
+            }
         }
 
         /// <summary>

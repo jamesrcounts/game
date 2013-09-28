@@ -10,10 +10,22 @@
             , gameLoop
             , toggleGameLoop
             , self = { gamepieces: args.slice(2) }
+            , settingKey = $(location).attr('pathname').substring(1)
             , share
             , updateEachPiece
             , updatePieces
             , updateView;
+
+        self.applySettings = function ($settings) {
+            var i, l = this.gamepieces.length, source = JSON.parse($settings);
+            for (i = 0; i < l; i++) {
+                this.gamepieces[i].applySettings(source);
+            }
+        };
+
+        if (settingKey) {
+            data.loadSettingsAsync(settingKey, self);
+        }
 
         controls.control.togglePlay = function () {
             toggleGameLoop();
@@ -141,18 +153,15 @@
         share = function () {
             var entity, link, settings = self.getSettings();
             entity = data.saveSettingsAsync(settings);
-            //$("#shareLink").remove();
 
             link = $("<a/>", {
                 href: "/" + entity.rowKey,
                 id: "shareLink",
-                class: "btn btn-success",
+                "class": "btn btn-success",
             });
             link.text(link.prop("href"));
             $("#shareKey").removeClass("hidden")
                 .append(link);
-
-            window.console.log(entity.rowKey);
         };
 
         $(function () {

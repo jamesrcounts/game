@@ -60,6 +60,13 @@
         return target;
     };
 
+    self.applySettings = function ($settings) {
+        var boardSettings = $settings.board;
+        if (boardSettings && boardSettings.width) {
+            self.size(boardSettings.width);
+        }
+    };
+
     self.canvas = lazyCanvas;
     self.context = lazyContext;
 

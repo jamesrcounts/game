@@ -1,11 +1,12 @@
 ﻿/*jshint bitwise: false*/
 define(function () {
     "use strict";
-    var Hashes = window.Hashes;
+    var Sha256 = window.Hashes.SHA256;
 
     var g = (function () {
         var self = {
-            addSettingsTo: function () { }
+            addSettingsTo: function () { },
+            applySettings: function () { }
         };
 
         var setSessionCookie = function (name, value) {
@@ -72,7 +73,7 @@ define(function () {
 
         self.saveSettingsAsync = function ($settings) {
             var entity = {}
-                , algorithm = new Hashes.SHA256()
+                , algorithm = new Sha256()
                 , data = JSON.stringify($settings);
 
             entity.rowKey = algorithm.hex(data);
@@ -85,6 +86,12 @@ define(function () {
 
         return self;
     })();
+
+    g.loadSettingsAsync = function ($settingsKey, $game) {
+        $.get("/Load", { rowKey: $settingsKey }, function (entity) {
+            $game.applySettings(entity.Settings);
+        }, "json");
+    };
 
     return g;
 });

@@ -35,6 +35,13 @@ define(["board", "data"], function (board, data) {
         return target;
     };
 
+    self.applySettings = function ($settings) {
+        var playerSettings = $settings.player;
+        if (playerSettings) {
+            self.factor = playerSettings.agility;
+        }
+    };
+
     self.checkEndGame = function () {
     };
 

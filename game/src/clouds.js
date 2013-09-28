@@ -3,6 +3,8 @@
     var self = [];
     self.count = 10;
     self.addSettingsTo = function () { };
+    self.applySettings = function () {
+    };
 
     self.reset = function () {
         for (var j = 0; j < self.count; j++) {

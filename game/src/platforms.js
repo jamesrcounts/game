@@ -187,6 +187,27 @@ define(
             return target;
         };
 
+        self.applySettings = function ($settings) {
+            var platformSettings = $settings.platforms;
+            if (platformSettings) {
+                if (platformSettings.bounce) {
+                    self.bounce(platformSettings.bounce);
+                }
+
+                if (platformSettings.count) {
+                    self.count = platformSettings.count;
+                }
+
+                if (platformSettings.move) {
+                    self.move(platformSettings.move);
+                }
+
+                if (platformSettings.grouping) {
+                    self.grouping(platformSettings.grouping);
+                }
+            }
+        }
+
         self.reset();
         return self;
     });
