@@ -1,15 +1,25 @@
 define(["data"], function (data) {
-    var expected = {
-        partitionKey: "fa404b90-2b8a-41e4-a3c6-e232bb7c9bfa",
-        createDate: "2013-09-02T22:31:41.918Z",
-        category: "Platforms",
-        label: "Bounce",
-        value: "flubber"
-    };
+    "use strict";
+
+    var beforeEach = window.beforeEach,
+        describe = window.describe,
+        expect = window.expect,
+        it = window.it,
+        expected = {
+            partitionKey: "fa404b90-2b8a-41e4-a3c6-e232bb7c9bfa",
+            createDate: "2013-09-02T22:31:41.918Z",
+            category: "Platforms",
+            label: "Bounce",
+            value: "flubber"
+        };
 
     describe("sending game settings", function () {
         it("should return the settings it sent", function () {
-            var entity, sent, sending;
+            var sent,
+                entity = {
+                    rowKey: 'c32a3d825df6bd7bfc6fd7c7daf2da837dd98281e972632cda7e41a8e4f12228',
+                    settings: '{"board":{"width":320},"platforms":{"bounce":2,"count":7,"move":false,"grouping":"anywhere"},"player":{"agility":3}}'
+                },
             sending = {
                 "board": {
                     "width": 320
@@ -27,35 +37,35 @@ define(["data"], function (data) {
 
             sent = data.saveSettingsAsync(sending);
 
-            entity = {
-                rowKey: 'c32a3d825df6bd7bfc6fd7c7daf2da837dd98281e972632cda7e41a8e4f12228',
-                settings: '{"board":{"width":320},"platforms":{"bounce":2,"count":7,"move":false,"grouping":"anywhere"},"player":{"agility":3}}'
-            };
             expect(sent).toEqual(entity);
         });
     });
     describe("retrieving game settings", function () {
-        it("should return notihing if not found", function () {
-            var settings;
-            data.loadSettingsAsync("foo", function (result) {
-                settings = result;
+        it("should return nothing if not found", function () {
+            var settings = {};
+            data.loadSettingsAsync("foo", {
+                applySettings: function (entity) {
+                    settings = entity;
+                }
             });
             expect(settings).toEqual({ rowKey: 'foo', Settings: '{}' });
         });
 
         it("should return the settings if found", function () {
-            var entity, settings;
+            var entity = {
+                rowKey: 'c32a3d825df6bd7bfc6fd7c7daf2da837dd98281e972632cda7e41a8e4f12228',
+                settings: '{"board":{"width":320},"platforms":{"bounce":2,"count":7,"move":false,"grouping":"anywhere"},"player":{"agility":3}}'
+            },
+            settings = {};
 
             data.loadSettingsAsync(
                 'c32a3d825df6bd7bfc6fd7c7daf2da837dd98281e972632cda7e41a8e4f12228',
-            function (result) {
-                settings = result;
-            });
+                {
+                    applySettings: function (data) {
+                        settings = data;
+                    }
+                });
 
-            entity = {
-                rowKey: 'c32a3d825df6bd7bfc6fd7c7daf2da837dd98281e972632cda7e41a8e4f12228',
-                settings: '{"board":{"width":320},"platforms":{"bounce":2,"count":7,"move":false,"grouping":"anywhere"},"player":{"agility":3}}'
-            };
             expect(settings).toEqual(entity);
         });
     });
@@ -69,7 +79,9 @@ define(["data"], function (data) {
             beforeEach(function () {
                 document.cookie = "sessionid= ;expires=Sat Aug 31 2013 20:56:22 GMT-0700 (Pacific Daylight Time)";
                 delete data.sessionid;
-                data.uuid = function () { return "fa404b90-2b8a-41e4-a3c6-e232bb7c9bfa"; };
+                data.uuid = function () {
+                    return "fa404b90-2b8a-41e4-a3c6-e232bb7c9bfa";
+                };
                 data.getDate = function () {
                     return new Date('2013-09-02T22:31:41.918Z').toJSON();
                 };

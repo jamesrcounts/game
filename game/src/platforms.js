@@ -3,13 +3,15 @@ define(
     ["data", "board", "points", "groups"],
     function (data, board, points, groups) {
         "use strict";
-        var Tangle = window.Tangle
-            , bounceFactors = [1 / 3, 1 / 2, 1, 2, 3, 4]
-            , createPlatform
-            , defaultBounce = 17
-            , factor = 2
-            , groupWith
-            , position = 0;
+        var Tangle = window.Tangle,
+            bounceFactors = [1 / 3, 1 / 2, 1, 2, 3, 4],
+            createPlatform,
+            defaultBounce = 17,
+            factor = 2,
+            groupWith,
+            position = 0,
+            settings = {};
+
         var self = [];
         self.count = 7;
         self.canMove = false;
@@ -50,6 +52,7 @@ define(
             }
 
             data.collectDataAsync("Platforms", "Bounce", bounce);
+            settings.bounce = bounce;
         };
 
         self.reset = function () {
@@ -92,6 +95,7 @@ define(
         self.grouping = function (algorithm) {
             if (this.groupingAlgorithm !== algorithm) {
                 data.collectDataAsync("Platforms", "Grouping", algorithm);
+                settings.grouping = algorithm;
                 this.groupingAlgorithm = algorithm;
                 switch (this.groupingAlgorithm) {
                     case "anywhere":
@@ -121,19 +125,12 @@ define(
         self.move = function (canMove) {
             if (this.canMove !== canMove) {
                 data.collectDataAsync("Platforms", "CanMove", canMove);
+                settings.move = canMove;
             }
             this.canMove = canMove;
         };
 
         self.update = function (deltaY) {
-            if (this.count !== this.length) {
-                data.collectDataAsync("Platforms", "Count", this.count);
-                while (this.count < this.length) {
-                    this.pop();
-                }
-                this.reset();
-            }
-
             for (var i = 0; i < this.count; i++) {
                 if (this[i].isMoving && this.canMove) {
                     if (this[i].x < 0) {
@@ -156,7 +153,19 @@ define(
             }
         };
 
-        self.plt = (function () {
+        self.resize = function (size) {
+            if (size !== this.length) {
+                data.collectDataAsync("Platforms", "Count", size);
+                settings.platformsCount = size;
+                this.count = size;
+                while (this.count < this.length) {
+                    this.pop();
+                }
+                this.reset();
+            }
+        };
+
+        self.tangle = (function () {
             var t = null, e = $('#platforms')[0];
             if (e) {
                 t = new Tangle(e, {
@@ -168,7 +177,7 @@ define(
                     },
                     update: function () {
                         self.bounce(this.platformsBounce);
-                        self.count = this.platformsCount;
+                        self.resize(this.platformsCount);
                         self.move(this.platformsMove);
                         self.grouping(this.platformsGrouping);
                     }
@@ -178,12 +187,7 @@ define(
         })();
 
         self.addSettingsTo = function (target) {
-            target.platforms = {
-                bounce: factor,
-                count: this.count,
-                move: this.canMove,
-                grouping: this.groupingAlgorithm
-            };
+            target.platforms = settings;
             return target;
         };
 
@@ -191,22 +195,22 @@ define(
             var platformSettings = $settings.platforms;
             if (platformSettings) {
                 if (platformSettings.bounce) {
-                    self.bounce(platformSettings.bounce);
+                    self.tangle.setValue("platformsBounce", platformSettings.bounce);
                 }
 
-                if (platformSettings.count) {
-                    self.count = platformSettings.count;
+                if (platformSettings.platformsCount) {
+                    self.tangle.setValue("platformsCount", platformSettings.platformsCount);
                 }
 
                 if (platformSettings.move) {
-                    self.move(platformSettings.move);
+                    self.tangle.setValue("platformsMove", platformSettings.move);
                 }
 
                 if (platformSettings.grouping) {
-                    self.grouping(platformSettings.grouping);
+                    self.tangle.setValue("platformsGrouping", platformSettings.grouping);
                 }
             }
-        }
+        };
 
         self.reset();
         return self;

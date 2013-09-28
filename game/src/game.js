@@ -3,23 +3,23 @@
         "platforms", "player", "points"],
     function ($, createjs, data, board, clouds, controls, platforms, player, points) {
         "use strict";
-        var args = Array.prototype.slice.call(arguments)
-            , checkCollisions
-            , drawAllPieces
-            , endGame
-            , gameLoop
-            , toggleGameLoop
-            , self = { gamepieces: args.slice(2) }
-            , settingKey = $(location).attr('pathname').substring(1)
-            , share
-            , updateEachPiece
-            , updatePieces
-            , updateView;
+        var args = Array.prototype.slice.call(arguments),
+            checkCollisions,
+            drawAllPieces,
+            endGame,
+            gameLoop,
+            toggleGameLoop,
+            self = { gamePieces: args.slice(2) },
+            settingKey = $(location).attr('pathname').substring(1),
+            share,
+            updateEachPiece,
+            updatePieces,
+            updateView;
 
         self.applySettings = function ($settings) {
-            var i, l = this.gamepieces.length, source = JSON.parse($settings);
-            for (i = 0; i < l; i++) {
-                this.gamepieces[i].applySettings(source);
+            var i, l = this.gamePieces.length, source = JSON.parse($settings);
+            for (i = 0; i < l; i = i + 1) {
+                this.gamePieces[i].applySettings(source);
             }
         };
 
@@ -142,10 +142,10 @@
         }
 
         self.getSettings = function () {
-            var l = this.gamepieces.length, settings = {};
+            var l = this.gamePieces.length, settings = {};
 
             for (var i = 0; i < l; i++) {
-                this.gamepieces[i].addSettingsTo(settings);
+                this.gamePieces[i].addSettingsTo(settings);
             }
             return settings;
         };
@@ -160,6 +160,7 @@
                 "class": "btn btn-success",
             });
             link.text(link.prop("href"));
+            $("#shareLink").remove();
             $("#shareKey").removeClass("hidden")
                 .append(link);
         };

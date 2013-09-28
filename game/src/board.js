@@ -5,12 +5,13 @@
         , cvs
         , ctx
         , lazyCanvas
-        , lazyContext;
-    var self = {
+        , lazyContext,
+    self = {
         width: defaultWidth,
         height: 500,
         color: '#d0e7f9'
-    };
+    },
+        settings = {};
 
     lazyCanvas = function () {
         if (!cvs) {
@@ -53,22 +54,13 @@
 
         this.width = defaultWidth * factor;
         data.collectDataAsync("Board", "Size", size);
+        settings.size = size;
     };
 
     self.addSettingsTo = function (target) {
-        target.board = { width: this.width };
+        target.board = settings;
         return target;
     };
-
-    self.applySettings = function ($settings) {
-        var boardSettings = $settings.board;
-        if (boardSettings && boardSettings.width) {
-            self.size(boardSettings.width);
-        }
-    };
-
-    self.canvas = lazyCanvas;
-    self.context = lazyContext;
 
     self.bt = (function () {
         var e = $('#board')[0], bt = null;
@@ -85,6 +77,16 @@
         }
         return bt;
     })();
+
+    self.applySettings = function ($settings) {
+        var boardSettings = $settings.board;
+        if (boardSettings && boardSettings.size) {
+            self.bt.setValue("boardSize", boardSettings.size);
+        }
+    };
+
+    self.canvas = lazyCanvas;
+    self.context = lazyContext;
 
     return self;
 });

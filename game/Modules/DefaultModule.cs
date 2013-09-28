@@ -9,10 +9,11 @@
 
 namespace Game.Modules
 {
-    using System.Threading.Tasks;
     using Microsoft.WindowsAzure.Storage.Table;
     using Nancy;
     using Nancy.ModelBinding;
+    using Nancy.Responses.Negotiation;
+    using System.Threading.Tasks;
 
     // ReSharper disable UnusedMember.Global
 
@@ -47,14 +48,15 @@ namespace Game.Modules
         /// Loads settings.
         /// </summary>
         /// <returns>The requested settings.</returns>
-        private GameSettings Load()
+        private Negotiator Load()
         {
             var rowKey = this.Request.Query["rowKey"];
             var retrieve = TableOperation.Retrieve<GameSettings>(GameSettings.Version, rowKey);
             using (var table = TableReferencePool.Pool.Acquire(typeof(GameSettings).Name))
             {
-                var result = (GameSettings)table.CloudTable.Execute(retrieve).Result;
-                return result;
+                TableResult queryResult = table.CloudTable.Execute(retrieve);
+                return Negotiate.WithModel(queryResult.Result)
+                    .WithStatusCode(queryResult.HttpStatusCode);
             }
         }
 

@@ -1,11 +1,12 @@
 ﻿/*jshint bitwise: false*/
 define(["board", "data"], function (board, data) {
     "use strict";
-    var Tangle = window.Tangle
-        , defaultSpeed = 5
-        , factor
-        , self = new Image()
-        , speed;
+    var Tangle = window.Tangle,
+        defaultSpeed = 5,
+        factor,
+        self = new Image(),
+        speed,
+        settings = {};
 
     self.frames = 1;
     self.height = 95;
@@ -26,20 +27,7 @@ define(["board", "data"], function (board, data) {
 
         speed = defaultSpeed * factor;
         data.collectDataAsync("Player", "Agility", agility);
-    };
-
-    self.addSettingsTo = function (target) {
-        target.player = {
-            agility: factor
-        };
-        return target;
-    };
-
-    self.applySettings = function ($settings) {
-        var playerSettings = $settings.player;
-        if (playerSettings) {
-            self.factor = playerSettings.agility;
-        }
+        settings.playerAgility = agility;
     };
 
     self.checkEndGame = function () {
@@ -115,6 +103,18 @@ define(["board", "data"], function (board, data) {
         }
         return t;
     })();
+
+    self.addSettingsTo = function (target) {
+        target.player = settings;
+        return target;
+    };
+
+    self.applySettings = function ($settings) {
+        var playerSettings = $settings.player;
+        if (playerSettings && playerSettings.playerAgility) {
+            self.pt.setValue("playerAgility", playerSettings.playerAgility);
+        }
+    };
 
     self.reset = function () {
         self.actualFrame = 0;
