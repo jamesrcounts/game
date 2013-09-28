@@ -1,6 +1,7 @@
 ﻿define(
-    ["easeljs", "data", "board", "clouds", "controls", "platforms", "player", "points"],
-    function (createjs, data, board, clouds, controls, platforms, player, points) {
+    ["jquery", "easeljs", "data", "board", "clouds", "controls",
+        "platforms", "player", "points"],
+    function ($, createjs, data, board, clouds, controls, platforms, player, points) {
         "use strict";
         var args = Array.prototype.slice.call(arguments)
             , checkCollisions
@@ -8,7 +9,8 @@
             , endGame
             , gameLoop
             , toggleGameLoop
-            , self = { gamepieces: args.slice(1) }
+            , self = { gamepieces: args.slice(2) }
+            , share
             , updateEachPiece
             , updatePieces
             , updateView;
@@ -30,22 +32,18 @@
                     continue;
                 }
 
-                if ($player.isFalling &&
-                    $player.X < platform.x + platform.width &&
-                    $player.X + $player.width > platform.x &&
-                    $player.Y + $player.height > platform.y &&
-                    $player.Y + $player.height < platform.y + platform.height) {
+                if ($player.isFalling
+                    && $player.X < platform.x + platform.width
+                    && $player.X + $player.width > platform.x
+                    && $player.Y + $player.height > platform.y
+                    && $player.Y + $player.height < platform.y
+                    + platform.height) {
                     platform.onCollide($player);
                 }
             }
         };
 
-        updateEachPiece = function (
-            $clouds
-          , $platforms
-          , $player
-          , $points
-        ) {
+        updateEachPiece = function ($clouds, $platforms, $player, $points) {
             var speed;
 
             checkCollisions($player, $platforms);
@@ -66,19 +64,8 @@
         updateView = drawAllPieces;
 
         gameLoop = function () {
-            updatePieces(
-            clouds
-            , platforms
-            , player
-            , points
-            );
-            updateView(
-                board
-                , clouds
-                , platforms
-                , player
-                , points
-            );
+            updatePieces(clouds, platforms, player, points);
+            updateView(board, clouds, platforms, player, points);
         };
 
         self.start = (function (u) {
@@ -103,7 +90,9 @@
             };
 
             return resume;
-        })(function () { gameLoop(); });
+        })(function () {
+            gameLoop();
+        });
 
         endGame = function () {
             var ctx = board.context(), tp = controls.control.togglePlay;
@@ -123,8 +112,10 @@
                 board.draw();
                 ctx.fillStyle = "Black";
                 ctx.font = "10pt Arial";
-                ctx.fillText("GAME OVER", (board.width / 2) - 60, (board.height / 2) - 50);
-                ctx.fillText("YOUR RESULT:" + points.value, board.width / 2 - 60, board.height / 2 - 30);
+                ctx.fillText("GAME OVER", (board.width / 2) - 60,
+                    (board.height / 2) - 50);
+                ctx.fillText("YOUR RESULT:" + points.value,
+                    board.width / 2 - 60, board.height / 2 - 30);
             };
 
             toggleGameLoop();
@@ -139,14 +130,34 @@
         }
 
         self.getSettings = function () {
-            var l = this.gamepieces.length
-            , settings = {};
+            var l = this.gamepieces.length, settings = {};
 
             for (var i = 0; i < l; i++) {
                 this.gamepieces[i].addSettingsTo(settings);
             }
             return settings;
         };
+
+        share = function () {
+            var entity, link, settings = self.getSettings();
+            entity = data.saveSettingsAsync(settings);
+            //$("#shareLink").remove();
+
+            link = $("<a/>", {
+                href: "/" + entity.rowKey,
+                id: "shareLink",
+                class: "btn btn-success",
+            });
+            link.text(link.prop("href"));
+            $("#shareKey").removeClass("hidden")
+                .append(link);
+
+            window.console.log(entity.rowKey);
+        };
+
+        $(function () {
+            $("#share").click(share);
+        });
 
         return self;
     });
