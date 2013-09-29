@@ -9,11 +9,11 @@
 
 namespace Game.Modules
 {
+    using Microsoft.WindowsAzure.Storage;
+    using Microsoft.WindowsAzure.Storage.Table;
     using System;
     using System.Collections.Generic;
     using System.Configuration;
-    using Microsoft.WindowsAzure.Storage;
-    using Microsoft.WindowsAzure.Storage.Table;
 
     /// <summary>
     /// The table reference pool.
@@ -48,6 +48,19 @@ namespace Game.Modules
         public static TableReferencePool Pool
         {
             get { return Instance; }
+        }
+
+        /// <summary>
+        /// Acquires a <see cref="CloudTableReference"/> instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="CloudTableReference"/>.
+        /// </returns>
+        /// <param name="type">The type to store in the table.</param>
+        public CloudTableReference Acquire(Type type)
+        {
+            string tableName = (type + "").Replace(".", string.Empty);
+            return Acquire(tableName);
         }
 
         /// <summary>

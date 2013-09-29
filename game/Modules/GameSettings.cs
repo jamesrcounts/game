@@ -6,6 +6,7 @@
 //   Defines the GameSettings type.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
+using System;
 
 namespace Game.Modules
 {
@@ -26,6 +27,7 @@ namespace Game.Modules
         {
             this.PartitionKey = Version;
             this.StoreCount = 1;
+            this.LoadCount = 0;
         }
 
         /// <summary>
@@ -38,6 +40,11 @@ namespace Game.Modules
         {
             get { return "0.0.1"; }
         }
+
+        /// <summary>
+        /// Gets or sets the number of times the settings have been loaded.
+        /// </summary>
+        public int LoadCount { get; set; }
 
         /// <summary>
         /// Gets or sets the settings.

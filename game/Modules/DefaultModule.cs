@@ -52,9 +52,22 @@ namespace Game.Modules
         {
             var rowKey = this.Request.Query["rowKey"];
             var retrieve = TableOperation.Retrieve<GameSettings>(GameSettings.Version, rowKey);
-            using (var table = TableReferencePool.Pool.Acquire(typeof(GameSettings).Name))
+            using (var table = TableReferencePool.Pool.Acquire(typeof(GameSettings)))
             {
                 TableResult queryResult = table.CloudTable.Execute(retrieve);
+                if (queryResult.Result != null)
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        var gameSettings = (GameSettings)queryResult.Result;
+                        gameSettings.LoadCount++;
+                        var replace = TableOperation.Replace(gameSettings);
+                        using (var saver = TableReferencePool.Pool.Acquire(typeof(GameSettings)))
+                        {
+                            saver.CloudTable.Execute(replace);
+                        }
+                    });
+                }
                 return Negotiate.WithModel(queryResult.Result)
                     .WithStatusCode(queryResult.HttpStatusCode);
             }
@@ -70,7 +83,7 @@ namespace Game.Modules
         {
             var dataPoint = this.Bind<GameEvent>();
             var operation = TableOperation.Insert(dataPoint);
-            using (var r = TableReferencePool.Pool.Acquire("GameEvents"))
+            using (var r = TableReferencePool.Pool.Acquire(typeof(GameEvent)))
             {
                 var tableResult = r.CloudTable.Execute(operation);
                 return tableResult.HttpStatusCode;
@@ -86,7 +99,7 @@ namespace Game.Modules
             var settings = this.Bind<GameSettings>();
             var getExisting = TableOperation.Retrieve<GameSettings>(settings.PartitionKey, settings.RowKey);
             var insertNew = TableOperation.Insert(settings);
-            using (var r = TableReferencePool.Pool.Acquire("GameSettings"))
+            using (var r = TableReferencePool.Pool.Acquire(typeof(GameSettings)))
             {
                 var result = r.CloudTable.Execute(getExisting);
                 var existing = (GameSettings)result.Result;

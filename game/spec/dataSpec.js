@@ -40,35 +40,7 @@ define(["data"], function (data) {
             expect(sent).toEqual(entity);
         });
     });
-    describe("retrieving game settings", function () {
-        it("should return nothing if not found", function () {
-            var settings = {};
-            data.loadSettingsAsync("foo", {
-                applySettings: function (entity) {
-                    settings = entity;
-                }
-            });
-            expect(settings).toEqual({ rowKey: 'foo', Settings: '{}' });
-        });
 
-        it("should return the settings if found", function () {
-            var entity = {
-                rowKey: 'c32a3d825df6bd7bfc6fd7c7daf2da837dd98281e972632cda7e41a8e4f12228',
-                settings: '{"board":{"width":320},"platforms":{"bounce":2,"count":7,"move":false,"grouping":"anywhere"},"player":{"agility":3}}'
-            },
-            settings = {};
-
-            data.loadSettingsAsync(
-                'c32a3d825df6bd7bfc6fd7c7daf2da837dd98281e972632cda7e41a8e4f12228',
-                {
-                    applySettings: function (data) {
-                        settings = data;
-                    }
-                });
-
-            expect(settings).toEqual(entity);
-        });
-    });
     describe("the data model", function () {
         it("should generate uuids", function () {
             var uuid = data.uuid();

@@ -1,15 +1,19 @@
-﻿define(["game", "player", "platforms"], function (game, player, platforms) {
+﻿define(["game", "player", "platforms", "board"], function (game, player, platforms, board) {
     describe("game settings", function () {
         it("looks like this at startup", function () {
             expect(JSON.stringify(game.getSettings()))
-                .toEqual('{"board":{"width":320},"platforms":{"bounce":2,"count":7,"move":false},"player":{}}');
+                .toEqual('{"board":{},"platforms":{},"player":{}}');
         });
 
         it("looks like this when completly populated", function () {
+            board.size("huge");
             player.agility("quickly");
             platforms.grouping("anywhere");
+            platforms.bounce("flubber");
+            platforms.resize(20);
+            platforms.move(true);
             expect(JSON.stringify(game.getSettings()))
-                .toEqual('{"board":{"width":320},"platforms":{"bounce":2,"count":7,"move":false,"grouping":"anywhere"},"player":{"agility":3}}');
+                .toEqual('{"board":{"size":"huge"},"platforms":{"grouping":"anywhere","bounce":"flubber","platformsCount":20,"move":true},"player":{"playerAgility":"quickly"}}');
         });
     });
 });
