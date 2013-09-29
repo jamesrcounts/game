@@ -6,6 +6,7 @@
         jasmine: "../lib/jasmine-1.3.1/jasmine",
         'jasmine-html': "../lib/jasmine-1.3.1/jasmine-html",
         spec: "../spec",
+        jshashes: "../lib/jshashes/hashes.min",
     },
     shim: {
         easeljs: { exports: 'createjs' },

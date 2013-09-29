@@ -1,7 +1,7 @@
 ﻿/*jshint bitwise: false*/
-define(function () {
+define(["jshashes"], function (Hashes) {
     "use strict";
-    var Sha256 = window.Hashes.SHA256;
+    var Sha256 = Hashes.SHA256;
 
     var g = (function () {
         var self = {
