@@ -133,15 +133,15 @@ define(["jquery", "jshashes"], function ($, Hashes) {
                     setLink(link, response.data.url);
                 }
             }
-        );
+        );  
         
-        $.get("https://tinyurl.com/create.php?url=" + encoded,
-            function(data){
-                if(!linkCache[url]){
-                    linkCache[url]=data;
-                    setLink(link, data);
-                }
+        $.get("http://is.gd/create.php?format=simple&url="+encoded,
+        function(response){
+            if(!linkCache[url]){
+                linkCache[url]=response;
+                setLink(link, response);
             }
+        }     
         );
     };
     return self;
