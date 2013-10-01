@@ -107,12 +107,12 @@ define(["jquery", "jshashes"], function ($, Hashes) {
         var shortLink = linkCache[url];
         if(shortLink){
             setLink(link, shortLink);
+            return;
         }
-        //
 
         $.ajax({
             type: "POST",
-            url: "https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyB9H5DiVH13Yy4Gu77gAkKtjk6oDDuP8FM",
+            url: "https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyCUMpx7pyxDl8bL9IeiPw828ta1nokffJ8",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({longUrl: url}),
             success: function(data){
@@ -124,7 +124,15 @@ define(["jquery", "jshashes"], function ($, Hashes) {
             }
         });
 
-        // get from bitly.
+        var encoded = encodeURIComponent(url);
+        $.get("https://api-ssl.bitly.com/v3/shorten?access_token=51534937372eb9dcc4636ee9c69a197d88bf2694&longUrl=" + encoded,
+            function(response){
+                if(!linkCache[url] && response.status_code === 200)
+                {
+                    linkCache[url] = response.data.url;
+                    setLink(link, response.data.url);
+                }
+            });
     };
     return self;
 });
