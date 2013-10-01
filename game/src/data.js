@@ -132,7 +132,17 @@ define(["jquery", "jshashes"], function ($, Hashes) {
                     linkCache[url] = response.data.url;
                     setLink(link, response.data.url);
                 }
-            });
+            }
+        );
+        
+        $.get("https://tinyurl.com/create.php?url=" + encoded,
+            function(data){
+                if(!linkCache[url]){
+                    linkCache[url]=data;
+                    setLink(link, data);
+                }
+            }
+        );
     };
     return self;
 });
