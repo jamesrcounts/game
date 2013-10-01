@@ -163,6 +163,8 @@
             $("#shareLink").remove();
             $("#shareKey").removeClass("hidden")
                 .append(link);
+
+            data.getShortLink(link);
         };
 
         $(function () {

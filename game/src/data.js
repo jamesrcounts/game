@@ -1,12 +1,16 @@
 ﻿/*jshint bitwise: false*/
-define(["jshashes"], function (Hashes) {
-    "use strict";
-    var Sha256 = Hashes.SHA256;
 
-    var g = (function () {
+define(["jquery", "jshashes"], function ($, Hashes) {
+    "use strict";
+    var self, Sha256 = Hashes.SHA256,
+        linkCache = {};
+
+    self = (function () {
         var self = {
-            addSettingsTo: function () { },
-            applySettings: function () { }
+            addSettingsTo: function () {
+            },
+            applySettings: function () {
+            }
         };
 
         var setSessionCookie = function (name, value) {
@@ -87,11 +91,40 @@ define(["jshashes"], function (Hashes) {
         return self;
     })();
 
-    g.loadSettingsAsync = function ($settingsKey, $game) {
+    self.loadSettingsAsync = function ($settingsKey, $game) {
         $.get("/Load", { rowKey: $settingsKey }, function (entity) {
             $game.applySettings(entity.Settings);
         }, "json");
     };
 
-    return g;
+    function setLink(link, shortLink) {
+        link.attr("href", shortLink);
+        link.text(shortLink);
+    }
+
+    self.getShortLink = function (link) {
+        var url = link.prop("href");
+        var shortLink = linkCache[url];
+        if(shortLink){
+            setLink(link, shortLink);
+        }
+        //
+
+        $.ajax({
+            type: "POST",
+            url: "https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyB9H5DiVH13Yy4Gu77gAkKtjk6oDDuP8FM",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({longUrl: url}),
+            success: function(data){
+                if(!linkCache[url])
+                {
+                    linkCache[url] = data.id;
+                    setLink(link, data.id);
+                }
+            }
+        });
+
+        // get from bitly.
+    };
+    return self;
 });

@@ -1,11 +1,11 @@
 ﻿define(["jquery", "data"], function ($, data) {
     "use strict";
-    var Tangle = window.Tangle
-        , defaultWidth = 320
-        , cvs
-        , ctx
-        , lazyCanvas
-        , lazyContext,
+    var Tangle = window.Tangle,
+        defaultWidth = 320,
+        cvs,
+        ctx,
+        lazyCanvas,
+        lazyContext,
     self = {
         width: defaultWidth,
         height: 500,
