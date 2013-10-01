@@ -134,15 +134,6 @@ define(["jquery", "jshashes"], function ($, Hashes) {
                 }
             }
         );  
-        
-        $.get("http://is.gd/create.php?format=simple&url="+encoded,
-        function(response){
-            if(!linkCache[url]){
-                linkCache[url]=response;
-                setLink(link, response);
-            }
-        }     
-        );
     };
     return self;
 });
