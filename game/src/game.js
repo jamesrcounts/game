@@ -24,7 +24,10 @@
         };
 
         if (settingKey) {
+            data.collectDataAsync("Game", "Settings", settingKey);
             data.loadSettingsAsync(settingKey, self);
+        } else {
+            data.collectDataAsync("Game", "Settings", "Default");
         }
 
         controls.control.togglePlay = function () {
