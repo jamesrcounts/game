@@ -2,7 +2,7 @@
     describe("game settings", function () {
         it("looks like this at startup", function () {
             expect(JSON.stringify(game.getSettings()))
-                .toEqual('{"board":{},"platforms":{},"player":{}}');
+                .toEqual('{"board":{"size":"small"},"platforms":{"bounce":"canvas","platformsCount":7,"move":false,"grouping":"mostly-centered"},"player":{"playerAgility":"normally"}}');
         });
 
         it("looks like this when completly populated", function () {
@@ -13,7 +13,7 @@
             platforms.resize(20);
             platforms.move(true);
             expect(JSON.stringify(game.getSettings()))
-                .toEqual('{"board":{"size":"huge"},"platforms":{"grouping":"anywhere","bounce":"flubber","platformsCount":20,"move":true},"player":{"playerAgility":"quickly"}}');
+                .toEqual('{"board":{"size":"huge"},"platforms":{"bounce":"flubber","platformsCount":20,"move":true,"grouping":"anywhere"},"player":{"playerAgility":"quickly"}}');
         });
     });
 });

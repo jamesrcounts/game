@@ -10,10 +10,15 @@ define(
             factor = 2,
             groupWith,
             position = 0,
-            settings = {};
+            settings = {
+                bounce: "canvas",
+                platformsCount: 7,
+                move: false,
+                grouping: "mostly-centered"
+            };
 
         var self = [];
-        self.count = 7;
+        self.count = settings.platformsCount;
         self.canMove = false;
 
         createPlatform = function (x, y, type) {

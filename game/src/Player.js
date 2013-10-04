@@ -6,7 +6,7 @@ define(["board", "data"], function (board, data) {
         factor,
         self = new Image(),
         speed,
-        settings = {};
+        settings = { playerAgility: "normally" };
 
     self.frames = 1;
     self.height = 95;

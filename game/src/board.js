@@ -6,12 +6,12 @@
         ctx,
         lazyCanvas,
         lazyContext,
-    self = {
-        width: defaultWidth,
-        height: 500,
-        color: '#d0e7f9'
-    },
-        settings = {};
+        self = {
+            width: defaultWidth,
+            height: 500,
+            color: '#d0e7f9'
+        },
+        settings = { size: "small" };
 
     lazyCanvas = function () {
         if (!cvs) {
